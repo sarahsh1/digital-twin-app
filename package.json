@@ -17,7 +17,7 @@
     "ios": "expo start --ios",
     "qr": "node scripts/generate_qr.mjs",
     "build:server": "esbuild server/_core/index.ts --platform=node --packages=external --bundle --format=esm --outdir=dist-server",
-    "build:web": "npx expo export --platform web",
+    "build:web": "npx expo export --platform web --clear",
     "build": "pnpm build:web && pnpm build:server"
   },
   "dependencies": {
