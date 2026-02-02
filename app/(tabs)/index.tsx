@@ -65,16 +65,16 @@ export default function HomeScreen() {
                 </Text>
               </View>
 
-              <Link href="/demo/sce-building" asChild onPress={handlePress}>
+              <Link
+                href="/buildings/demo-sce-building"
+                asChild
+                onPress={handlePress}
+              >
                 <TouchableOpacity
                   className="bg-white/20 backdrop-blur-lg px-4 py-3 rounded-xl self-start"
                   style={{
                     borderWidth: 1,
                     borderColor: 'rgba(255,255,255,0.3)'
-                  }}
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)
-                    router.push(`/buildings/demo-sce-building`)
                   }}
                 >
                   <Text className="text-white font-semibold">
