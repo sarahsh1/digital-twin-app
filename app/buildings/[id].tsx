@@ -8,11 +8,24 @@ import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { Badge } from "@/components/ui/badge";
+import { MetricCard } from "@/components/ui/card";
+import { SectionHeader, CardTitle } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
 import { Building3DView } from "@/components/Building3DView";
 import { IoTDashboard } from "@/components/IoTDashboard";
 import { LineChart, BarChart, PieChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
+
+// react-native-chart-kit wants an rgba() string with variable opacity for
+// `chartConfig.color`, so palette hex tokens need converting at the edge.
+const hexToRgba = (hex: string, opacity: number) => {
+  const clean = hex.replace("#", "");
+  const bigint = parseInt(clean, 16);
+  const r = (bigint >> 16) & 255;
+  const g = (bigint >> 8) & 255;
+  const b = bigint & 255;
+  return `rgba(${r}, ${g}, ${b}, ${opacity})`;
+};
 
 interface Building {
   id: string;
@@ -165,19 +178,22 @@ export default function BuildingDetailScreen() {
             <Animated.View entering={FadeInDown.duration(400)} className="p-4">
               {/* Building Rendering */}
               <View className="mb-6">
-                <Text className="text-foreground text-lg font-bold mb-1">Building Rendering</Text>
+                <SectionHeader className="mb-1">Building Rendering</SectionHeader>
                 <Text className="text-muted text-xs mb-3">Static illustration, not a live 3D model</Text>
                 <Building3DView buildingId={building.id} model3D={building.model3D} solarModel={building.solarModel} />
               </View>
 
               {/* Building Info */}
               <View className="bg-surface rounded-2xl p-4 mb-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                <Text className="text-foreground text-lg font-bold mb-3">Building Information</Text>
-                
+                <SectionHeader className="mb-3">Building Information</SectionHeader>
+
                 <View className="gap-3">
-                  <View className="flex-row justify-between">
+                  <View className="flex-row justify-between items-center">
                     <Text className="text-muted">Location</Text>
-                    <Text className="text-foreground font-semibold">📍 {building.location}</Text>
+                    <View className="flex-row items-center gap-1">
+                      <Ionicons name="location" size={14} color={colors.foreground} />
+                      <Text className="text-foreground font-semibold">{building.location}</Text>
+                    </View>
                   </View>
                   <View className="flex-row justify-between">
                     <Text className="text-muted">Size</Text>
@@ -220,82 +236,83 @@ export default function BuildingDetailScreen() {
                   <Text className="text-white text-lg font-bold">Run Simulation</Text>
                   <Text className="text-white/80 text-sm">Analyze carbon reduction scenarios</Text>
                 </View>
-                <Text className="text-white text-2xl">→</Text>
+                <Ionicons name="arrow-forward" size={22} color="#fff" />
               </TouchableOpacity>
             </Animated.View>
           )}
 
           {activeTab === "systems" && (
             <Animated.View entering={FadeInDown.duration(400)} className="p-4">
-              <Text className="text-foreground text-lg font-bold mb-4">IoT Systems Dashboard</Text>
+              <SectionHeader className="mb-4">Systems Overview</SectionHeader>
               <IoTDashboard />
 
               {/* Building Systems */}
               <View className="mt-6 gap-3">
-                {[
-                  { icon: "Zap", label: "Electrical System", status: "Active", color: colors.success },
-                  { icon: "Thermometer", label: "HVAC System", status: "Active", color: colors.success },
-                  { icon: "Droplets", label: "Water System", status: "Active", color: colors.success },
-                  { icon: "Wind", label: "Ventilation", status: "Active", color: colors.success },
-                ].map((system, index) => {
-                  const iconName = system.icon;
-                  return (
-                    <View
-                      key={index}
-                      className="bg-surface rounded-xl p-4 flex-row items-center justify-between"
-                      style={{ borderWidth: 1, borderColor: colors.border }}
-                    >
-                      <View className="flex-row items-center gap-3">
-                        <View className="w-10 h-10 rounded-lg items-center justify-center" style={{ backgroundColor: system.color + "20" }}>
-                          <Text style={{ fontSize: 20 }}>{system.icon === "Zap" ? "⚡" : system.icon === "Thermometer" ? "🌡️" : system.icon === "Droplets" ? "💧" : "💨"}</Text>
-                        </View>
-                        <View>
-                          <Text className="text-foreground font-semibold">{system.label}</Text>
-                          <Text className="text-muted text-sm">{system.status}</Text>
-                        </View>
+                {(
+                  [
+                    { icon: "flash", label: "Electrical System", status: "Active" },
+                    { icon: "thermometer", label: "HVAC System", status: "Active" },
+                    { icon: "water", label: "Water System", status: "Active" },
+                    { icon: "cloudy", label: "Ventilation", status: "Active" },
+                  ] as { icon: keyof typeof Ionicons.glyphMap; label: string; status: string }[]
+                ).map((system, index) => (
+                  <View
+                    key={index}
+                    className="bg-surface rounded-xl p-4 flex-row items-center justify-between"
+                    style={{ borderWidth: 1, borderColor: colors.border }}
+                  >
+                    <View className="flex-row items-center gap-3">
+                      <View
+                        className="w-10 h-10 rounded-lg items-center justify-center"
+                        style={{ backgroundColor: colors.success + "20" }}
+                      >
+                        <Ionicons name={system.icon} size={20} color={colors.success} />
                       </View>
-                      <View className="w-2 h-2 rounded-full" style={{ backgroundColor: system.color }} />
+                      <View>
+                        <Text className="text-foreground font-semibold">{system.label}</Text>
+                        <Text className="text-muted text-sm">{system.status}</Text>
+                      </View>
                     </View>
-                  );
-                })}
+                    <View className="w-2 h-2 rounded-full" style={{ backgroundColor: colors.success }} />
+                  </View>
+                ))}
               </View>
             </Animated.View>
           )}
 
           {activeTab === "analytics" && (
             <Animated.View entering={FadeInDown.duration(400)} className="p-4">
-              <Text className="text-foreground text-lg font-bold mb-4">Building Analytics</Text>
-              
+              <SectionHeader className="mb-4">Building Analytics</SectionHeader>
+
               {/* Key Metrics */}
-              <View className="gap-4 mb-6">
-                <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                  <Text className="text-muted text-sm mb-1">Carbon Intensity</Text>
-                  <Text className="text-foreground text-2xl font-bold">
-                    {building.currentEmissions && building.size 
+              <View className="gap-3 mb-6">
+                <MetricCard
+                  label="Carbon Intensity"
+                  value={`${
+                    building.currentEmissions && building.size
                       ? ((building.currentEmissions / building.size) * 1000).toFixed(2)
-                      : "N/A"} kg CO₂/sq ft
-                  </Text>
-                </View>
-
-                <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                  <Text className="text-muted text-sm mb-1">Energy Intensity</Text>
-                  <Text className="text-foreground text-2xl font-bold">
-                    {building.energyConsumption && building.size
+                      : "N/A"
+                  } kg CO₂/sq ft`}
+                />
+                <MetricCard
+                  label="Energy Intensity"
+                  value={`${
+                    building.energyConsumption && building.size
                       ? (building.energyConsumption / building.size).toFixed(1)
-                      : "N/A"} kWh/sq ft
-                  </Text>
-                </View>
-
-                <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                  <Text className="text-muted text-sm mb-1">Reduction Potential</Text>
-                  <Text className="text-primary text-2xl font-bold">32-45%</Text>
-                  <Text className="text-muted text-xs mt-1">Based on similar buildings</Text>
-                </View>
+                      : "N/A"
+                  } kWh/sq ft`}
+                />
+                <MetricCard
+                  label="Reduction Potential"
+                  value="32-45%"
+                  tone="primary"
+                  caption="Based on similar buildings"
+                />
               </View>
 
               {/* Energy Consumption Trend */}
               <View className="mb-6">
-                <Text className="text-foreground text-base font-bold mb-3">Energy Consumption (12 Months)</Text>
+                <CardTitle className="mb-3">Energy Consumption (12 Months)</CardTitle>
                 <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
                   <LineChart
                     data={{
@@ -324,7 +341,7 @@ export default function BuildingDetailScreen() {
                       backgroundGradientFrom: colors.surface,
                       backgroundGradientTo: colors.surface,
                       decimalPlaces: 0,
-                      color: (opacity = 1) => `rgba(10, 126, 164, ${opacity})`,
+                      color: (opacity = 1) => hexToRgba(colors.primary, opacity),
                       labelColor: (opacity = 1) => colors.muted,
                       style: { borderRadius: 16 },
                       propsForDots: {
@@ -342,19 +359,19 @@ export default function BuildingDetailScreen() {
 
               {/* Carbon Emissions Breakdown */}
               <View className="mb-6">
-                <Text className="text-foreground text-base font-bold mb-3">Carbon Emissions by System</Text>
+                <CardTitle className="mb-3">Carbon Emissions by System</CardTitle>
                 <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
                   <PieChart
                     data={[
-                      { name: "HVAC", population: 45, color: "#0a7ea4", legendFontColor: colors.muted, legendFontSize: 12 },
-                      { name: "Lighting", population: 25, color: "#10b981", legendFontColor: colors.muted, legendFontSize: 12 },
-                      { name: "Equipment", population: 20, color: "#f59e0b", legendFontColor: colors.muted, legendFontSize: 12 },
-                      { name: "Other", population: 10, color: "#6b7280", legendFontColor: colors.muted, legendFontSize: 12 },
+                      { name: "HVAC", population: 45, color: colors.secondary, legendFontColor: colors.muted, legendFontSize: 12 },
+                      { name: "Lighting", population: 25, color: colors.primary, legendFontColor: colors.muted, legendFontSize: 12 },
+                      { name: "Equipment", population: 20, color: colors.warning, legendFontColor: colors.muted, legendFontSize: 12 },
+                      { name: "Other", population: 10, color: colors.muted, legendFontColor: colors.muted, legendFontSize: 12 },
                     ]}
                     width={Dimensions.get("window").width - 80}
                     height={220}
                     chartConfig={{
-                      color: (opacity = 1) => `rgba(10, 126, 164, ${opacity})`,
+                      color: (opacity = 1) => hexToRgba(colors.primary, opacity),
                     }}
                     accessor="population"
                     backgroundColor="transparent"
@@ -367,7 +384,7 @@ export default function BuildingDetailScreen() {
 
               {/* Monthly Cost Analysis */}
               <View className="mb-6">
-                <Text className="text-foreground text-base font-bold mb-3">Monthly Energy Cost</Text>
+                <CardTitle className="mb-3">Monthly Energy Cost</CardTitle>
                 <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
                   <BarChart
                     data={{
@@ -385,7 +402,7 @@ export default function BuildingDetailScreen() {
                       backgroundGradientFrom: colors.surface,
                       backgroundGradientTo: colors.surface,
                       decimalPlaces: 0,
-                      color: (opacity = 1) => `rgba(16, 185, 129, ${opacity})`,
+                      color: (opacity = 1) => hexToRgba(colors.success, opacity),
                       labelColor: (opacity = 1) => colors.muted,
                       style: { borderRadius: 16 },
                     }}
