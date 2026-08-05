@@ -2,8 +2,11 @@ import { useState, useCallback } from "react";
 import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { router, useFocusEffect } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { ScreenContainer } from "@/components/screen-container";
 import { Badge } from "@/components/ui/badge";
+import { ScreenTitle, SectionHeader } from "@/components/ui/typography";
+import { useColors } from "@/hooks/use-colors";
 import { loadAllSimulations } from "@/lib/simulations";
 
 interface CompanyProfile {
@@ -14,6 +17,7 @@ interface CompanyProfile {
 }
 
 export default function ProfileScreen() {
+  const colors = useColors();
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
   const [buildingsCount, setBuildingsCount] = useState(0);
   const [simulationsCount, setSimulationsCount] = useState(0);
@@ -77,7 +81,7 @@ export default function ProfileScreen() {
     onPress,
     comingSoon,
   }: {
-    icon: string;
+    icon: keyof typeof Ionicons.glyphMap;
     title: string;
     onPress?: () => void;
     comingSoon?: boolean;
@@ -89,10 +93,14 @@ export default function ProfileScreen() {
       style={{ opacity: comingSoon ? 0.55 : 1 }}
     >
       <View className="flex-row items-center flex-1">
-        <Text className="text-2xl mr-3">{icon}</Text>
+        <Ionicons name={icon} size={20} color={colors.foreground} style={{ marginRight: 14, width: 20 }} />
         <Text className="text-base text-foreground">{title}</Text>
       </View>
-      {comingSoon ? <Badge label="Coming soon" tone="neutral" /> : <Text className="text-muted text-xl">›</Text>}
+      {comingSoon ? (
+        <Badge label="Coming soon" tone="neutral" />
+      ) : (
+        <Ionicons name="chevron-forward" size={18} color={colors.muted} />
+      )}
     </TouchableOpacity>
   );
 
@@ -101,7 +109,7 @@ export default function ProfileScreen() {
       <ScrollView className="flex-1" contentContainerStyle={{ paddingBottom: 40 }}>
         {/* Header */}
         <View className="px-6 pt-6 pb-6">
-          <Text className="text-3xl font-bold text-foreground mb-2">Profile</Text>
+          <ScreenTitle className="text-3xl mb-2">Profile</ScreenTitle>
         </View>
 
         {/* Company Profile Card */}
@@ -109,7 +117,7 @@ export default function ProfileScreen() {
           <View className="bg-surface rounded-2xl p-6">
             <View className="items-center mb-4">
               <View className="w-20 h-20 bg-primary/20 rounded-full items-center justify-center mb-3">
-                <Text className="text-4xl">🏢</Text>
+                <Ionicons name="business" size={36} color={colors.primary} />
               </View>
               <Text className="text-2xl font-bold text-foreground mb-1">
                 {profile?.companyName || "Your Company"}
@@ -144,7 +152,7 @@ export default function ProfileScreen() {
         {/* Sustainability Goals */}
         {profile?.goals && (
           <View className="px-6 mb-6">
-            <Text className="text-lg font-bold text-foreground mb-3">Sustainability Goals</Text>
+            <SectionHeader className="mb-3">Sustainability Goals</SectionHeader>
             <View className="bg-surface rounded-xl p-4">
               <Text className="text-base text-foreground leading-relaxed">{profile.goals}</Text>
             </View>
@@ -153,18 +161,18 @@ export default function ProfileScreen() {
 
         {/* Account Settings */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">Account Settings</Text>
+          <SectionHeader className="mb-3">Account Settings</SectionHeader>
           <View className="bg-surface rounded-xl px-4">
-            <SettingItem icon="🔔" title="Notifications" comingSoon />
-            <SettingItem icon="🔄" title="Data Sync" comingSoon />
-            <SettingItem icon="📏" title="Units" comingSoon />
-            <SettingItem icon="🌐" title="Language" comingSoon />
+            <SettingItem icon="notifications-outline" title="Notifications" comingSoon />
+            <SettingItem icon="sync-outline" title="Data Sync" comingSoon />
+            <SettingItem icon="resize-outline" title="Units" comingSoon />
+            <SettingItem icon="globe-outline" title="Language" comingSoon />
           </View>
         </View>
 
         {/* Subscription */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">Subscription & Billing</Text>
+          <SectionHeader className="mb-3">Subscription & Billing</SectionHeader>
           <View className="bg-surface rounded-xl p-4">
             <View className="flex-row items-center justify-between mb-3">
               <View>
@@ -187,38 +195,44 @@ export default function ProfileScreen() {
 
         {/* Support & Resources */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">Support & Resources</Text>
+          <SectionHeader className="mb-3">Support & Resources</SectionHeader>
           <View className="bg-surface rounded-xl px-4">
-            <SettingItem icon="❓" title="Help Center" comingSoon />
-            <SettingItem icon="💬" title="Contact Support" comingSoon />
-            <SettingItem icon="🎓" title="Tutorial Videos" comingSoon />
-            <SettingItem icon="📚" title="API Documentation" comingSoon />
+            <SettingItem icon="help-circle-outline" title="Help Center" comingSoon />
+            <SettingItem icon="chatbubble-ellipses-outline" title="Contact Support" comingSoon />
+            <SettingItem icon="school-outline" title="Tutorial Videos" comingSoon />
+            <SettingItem icon="book-outline" title="API Documentation" comingSoon />
           </View>
         </View>
 
         {/* About */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">About</Text>
+          <SectionHeader className="mb-3">About</SectionHeader>
           <View className="bg-surface rounded-xl px-4">
             <View className="flex-row items-center justify-between py-4 border-b border-border">
               <View className="flex-row items-center flex-1">
-                <Text className="text-2xl mr-3">ℹ️</Text>
+                <Ionicons
+                  name="information-circle-outline"
+                  size={20}
+                  color={colors.foreground}
+                  style={{ marginRight: 14, width: 20 }}
+                />
                 <Text className="text-base text-foreground">App Version</Text>
               </View>
               <Text className="text-muted text-sm">1.0.0</Text>
             </View>
-            <SettingItem icon="📄" title="Terms of Service" comingSoon />
-            <SettingItem icon="🔒" title="Privacy Policy" comingSoon />
-            <SettingItem icon="⚖️" title="Licenses" comingSoon />
+            <SettingItem icon="document-text-outline" title="Terms of Service" comingSoon />
+            <SettingItem icon="lock-closed-outline" title="Privacy Policy" comingSoon />
+            <SettingItem icon="receipt-outline" title="Licenses" comingSoon />
           </View>
         </View>
 
         {/* Sign Out */}
         <View className="px-6">
           <TouchableOpacity
-            className="bg-error/10 border border-error rounded-xl py-4 items-center active:opacity-70"
+            className="bg-error/10 border border-error rounded-xl py-4 items-center flex-row justify-center gap-2 active:opacity-70"
             onPress={handleSignOut}
           >
+            <Ionicons name="log-out-outline" size={18} color={colors.error} />
             <Text className="text-error font-semibold">Sign Out</Text>
           </TouchableOpacity>
         </View>
