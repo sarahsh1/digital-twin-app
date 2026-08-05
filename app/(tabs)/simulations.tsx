@@ -1,29 +1,17 @@
 import { ScrollView, Text, View, TouchableOpacity, Image } from "react-native";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Link, router, useFocusEffect } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
-import { getAllSimulations, type SimulationResult } from "@/lib/demoSimulations";
-
-interface Simulation {
-  id: string;
-  buildingName: string;
-  interventionType: string;
-  results: {
-    baseline: { annualEmissions: number };
-    projected: { annualEmissions: number; reductionPercentage: number };
-    financial: { implementationCost: number; annualSavings: number; paybackPeriod: number };
-  };
-  createdAt: string;
-}
+import { loadAllSimulations, type FormattedSimulation } from "@/lib/simulations";
 
 export default function SimulationsScreen() {
   const colors = useColors();
-  const [simulations, setSimulations] = useState<Simulation[]>([]);
+  const [simulations, setSimulations] = useState<FormattedSimulation[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -31,72 +19,9 @@ export default function SimulationsScreen() {
     }, [])
   );
 
-  const reloadDemoData = async () => {
-    try {
-      // Clear all data including initialization flags
-      await AsyncStorage.removeItem("simulations");
-      await AsyncStorage.removeItem("buildings");
-      await AsyncStorage.removeItem("demoDataInitialized");
-      await AsyncStorage.removeItem("demoSimsSaved");
-      // Reload page to trigger auto-initialization
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      } else {
-        await loadSimulations();
-        alert("Demo data reloaded successfully! All simulations now show correct percentages.");
-      }
-    } catch (error) {
-      console.error("Failed to reload demo data", error);
-      alert("Failed to reload data. Please try again.");
-    }
-  };
-
   const loadSimulations = async () => {
-    try {
-      const data = await AsyncStorage.getItem("simulations");
-      let userSimulations: Simulation[] = [];
-      if (data) {
-        userSimulations = JSON.parse(data);
-      }
-      
-      // Load demo simulations
-      const demoSims = getAllSimulations();
-      const formattedDemoSims: Simulation[] = demoSims.map(sim => ({
-        id: sim.id,
-        buildingName: sim.buildingName,
-        interventionType: sim.scenarioType.toLowerCase().includes("solar") ? "solar" : 
-                         sim.scenarioType.toLowerCase().includes("hvac") ? "hvac" :
-                         sim.scenarioType.toLowerCase().includes("wind") ? "wind" : 
-                         sim.scenarioType.toLowerCase().includes("process") ? "hvac" :
-                         sim.scenarioType.toLowerCase().includes("energy") ? "hvac" : "envelope",
-        results: {
-          baseline: { annualEmissions: 1000 },
-          projected: { 
-            annualEmissions: 1000 * (1 - sim.carbonReduction / 100), 
-            reductionPercentage: sim.carbonReduction 
-          },
-          financial: { 
-            implementationCost: sim.costSavings / (sim.roi / 100), 
-            annualSavings: sim.costSavings, 
-            paybackPeriod: sim.paybackPeriod 
-          }
-        },
-        createdAt: sim.date
-      }));
-      
-      // Save demo simulations to AsyncStorage if not already saved
-      const hasDemoSims = await AsyncStorage.getItem("demoSimsSaved");
-      if (!hasDemoSims) {
-        await AsyncStorage.setItem("simulations", JSON.stringify(formattedDemoSims));
-        await AsyncStorage.setItem("demoSimsSaved", "true");
-      }
-      
-      // Combine user and demo simulations
-      const allSims = [...userSimulations, ...formattedDemoSims];
-      setSimulations(allSims.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-    } catch (error) {
-      console.error("Failed to load simulations", error);
-    }
+    const all = await loadAllSimulations();
+    setSimulations(all);
   };
 
   const getInterventionIcon = (type: string) => {
@@ -141,21 +66,6 @@ export default function SimulationsScreen() {
             </Animated.View>
           ) : (
             <>
-              {/* Reload Demo Data Button */}
-              <TouchableOpacity 
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  reloadDemoData();
-                }}
-                className="bg-success rounded-2xl p-4 my-4 flex-row items-center justify-between"
-              >
-                <View>
-                  <Text className="text-white text-lg font-bold">Reload Demo Data</Text>
-                  <Text className="text-white/80 text-sm">Fix 0% issue - refresh all simulations</Text>
-                </View>
-                <Text className="text-white text-3xl">🔄</Text>
-              </TouchableOpacity>
-
               {/* New Simulation Button */}
               <Link href="/simulations/new" asChild>
                 <TouchableOpacity 
@@ -193,9 +103,12 @@ export default function SimulationsScreen() {
                           {getInterventionIcon(sim.interventionType)}
                         </Text>
                         <View className="flex-1">
-                          <Text className="text-foreground text-lg font-bold capitalize">
-                            {sim.interventionType.replace("-", " ")} Strategy
-                          </Text>
+                          <View className="flex-row items-center gap-2 mb-1">
+                            <Text className="text-foreground text-lg font-bold capitalize">
+                              {sim.interventionType.replace("-", " ")} Strategy
+                            </Text>
+                            {sim.isDemo && <Badge label="Sample" tone="sample" />}
+                          </View>
                           <Text className="text-muted text-sm">{sim.buildingName}</Text>
                         </View>
                         <View className="bg-success/20 px-3 py-1 rounded-full">

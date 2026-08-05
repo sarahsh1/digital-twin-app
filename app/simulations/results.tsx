@@ -1,20 +1,20 @@
-import { ScrollView, Text, View, TouchableOpacity, Image, Dimensions, Alert } from "react-native";
+import { ScrollView, Text, View, TouchableOpacity, Image, Dimensions } from "react-native";
 import { useEffect, useState } from "react";
 
 const { width } = Dimensions.get("window");
 import { router, useLocalSearchParams } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
-import { getAllSimulations } from "@/lib/demoSimulations";
+import { getSimulationById, type FormattedSimulation } from "@/lib/simulations";
 
 export default function SimulationResultsScreen() {
   const colors = useColors();
   const { simulationId } = useLocalSearchParams();
-  const [simulation, setSimulation] = useState<any>(null);
+  const [simulation, setSimulation] = useState<FormattedSimulation | null>(null);
 
   useEffect(() => {
     loadSimulation();
@@ -22,72 +22,8 @@ export default function SimulationResultsScreen() {
 
   const loadSimulation = async () => {
     try {
-      // Always load and format demo simulations fresh from source
-      const demoSims = getAllSimulations();
-      const formattedDemoSims = demoSims.map(sim => ({
-        id: sim.id,
-        buildingName: sim.buildingName,
-        interventionType: sim.scenarioType.toLowerCase().includes("solar") ? "solar" : 
-                         sim.scenarioType.toLowerCase().includes("hvac") ? "hvac" :
-                         sim.scenarioType.toLowerCase().includes("wind") ? "wind" : 
-                         sim.scenarioType.toLowerCase().includes("process") || sim.scenarioType.toLowerCase().includes("energy") ? "hvac" : "envelope",
-        results: {
-          baseline: { annualEmissions: 1000 },
-          projected: { 
-            annualEmissions: 1000 * (1 - sim.carbonReduction / 100),
-            annualReduction: 1000 * (sim.carbonReduction / 100),
-            reductionPercentage: sim.carbonReduction
-          },
-          financial: { 
-            implementationCost: sim.costSavings / (sim.roi / 100), 
-            annualSavings: sim.costSavings, 
-            paybackPeriod: sim.paybackPeriod,
-            roi: sim.roi,
-            npv: sim.costSavings * 15
-          },
-          confidence: {
-            level: sim.confidence >= 90 ? "high" : sim.confidence >= 80 ? "medium" : "low",
-            percentage: sim.confidence,
-            factors: ["Building data quality", "Historical performance", "Weather patterns"]
-          }
-        },
-        createdAt: sim.date
-      }));
-      
-      // Check if this is a demo simulation
-      const demoSim = formattedDemoSims.find((s: any) => s.id === simulationId);
-      console.log('Looking for simulation ID:', simulationId);
-      console.log('Found demo simulation:', demoSim);
-      if (demoSim) {
-        console.log('Demo sim data:', JSON.stringify(demoSim, null, 2));
-        setSimulation(demoSim);
-        return;
-      }
-      
-      // If not demo, load user simulations from AsyncStorage
-      const data = await AsyncStorage.getItem("simulations");
-      let userSimulations: any[] = [];
-      if (data) {
-        userSimulations = JSON.parse(data);
-      }
-      
-      // Add annualReduction to user simulations if missing
-      const formattedUserSims = userSimulations.map((sim: any) => ({
-        ...sim,
-        results: {
-          ...sim.results,
-          projected: {
-            ...sim.results.projected,
-            annualReduction: sim.results.baseline?.annualEmissions && sim.results.projected?.annualEmissions 
-              ? sim.results.baseline.annualEmissions - sim.results.projected.annualEmissions
-              : 0
-          }
-        }
-      }));
-      
-      // Find user simulation
-      const found = formattedUserSims.find((s: any) => s.id === simulationId);
-      setSimulation(found);
+      const found = await getSimulationById(simulationId as string);
+      setSimulation(found ?? null);
     } catch (error) {
       console.error("Failed to load simulation", error);
     }
@@ -104,7 +40,7 @@ export default function SimulationResultsScreen() {
   }
 
   const { results, buildingName, interventionType } = simulation;
-  const { baseline = { annualEmissions: 1000 }, projected = { annualEmissions: 0, annualReduction: 0, reductionPercentage: 0 }, financial = {}, confidence = {} } = results || {};
+  const { baseline, projected, financial, confidence } = results;
 
   return (
     <ScreenContainer>
@@ -114,7 +50,10 @@ export default function SimulationResultsScreen() {
           <TouchableOpacity onPress={() => router.back()} className="mb-2">
             <Text className="text-primary text-base">← Back</Text>
           </TouchableOpacity>
-          <Text className="text-foreground text-xl font-bold">Simulation Results</Text>
+          <View className="flex-row items-center gap-2">
+            <Text className="text-foreground text-xl font-bold">Simulation Results</Text>
+            {simulation.isDemo && <Badge label="Sample" tone="sample" />}
+          </View>
           <Text className="text-muted text-sm">{buildingName}</Text>
         </View>
 
@@ -246,21 +185,13 @@ export default function SimulationResultsScreen() {
 
         {/* Actions */}
         <View className="p-4 border-t gap-3" style={{ borderTopColor: colors.border }}>
-          <TouchableOpacity
-            onPress={() => {
-              Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
-              Alert.alert(
-                "Report Generated",
-                `PDF report for ${buildingName} simulation has been generated.\n\nThe report includes:\n• Building specifications\n• 3D digital twin visualization\n• Carbon reduction metrics\n• Financial analysis & ROI\n• Implementation recommendations\n\nIn a production app, this would download a PDF file.`,
-                [
-                  { text: "OK" }
-                ]
-              );
-            }}
-            className="bg-secondary rounded-xl p-4 items-center"
+          <View
+            className="rounded-xl p-4 items-center flex-row justify-center gap-2"
+            style={{ borderWidth: 1, borderColor: colors.border, opacity: 0.6 }}
           >
-            <Text className="text-background font-bold">📄 Download PDF Report</Text>
-          </TouchableOpacity>
+            <Text className="text-muted font-semibold">📄 Export PDF Report</Text>
+            <Badge label="Coming soon" tone="neutral" />
+          </View>
 
           <TouchableOpacity
             onPress={() => {

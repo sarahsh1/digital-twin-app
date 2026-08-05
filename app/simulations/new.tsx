@@ -122,8 +122,8 @@ export default function NewSimulationScreen() {
       parameters: {
         solarCapacity: interventionType === "solar" || interventionType === "combined" ? parseInt(solarCapacity) : undefined,
         hvacEfficiencyGain: interventionType === "hvac" || interventionType === "combined" ? parseInt(hvacEfficiency) : undefined,
-        windTurbines: interventionType === "wind" ? parseInt(windTurbines) : undefined,
-        envelopeUpgrade: interventionType === "envelope" ? true : undefined,
+        windTurbines: interventionType === "wind" || interventionType === "combined" ? parseInt(windTurbines) : undefined,
+        envelopeUpgrade: interventionType === "envelope" || interventionType === "combined" ? true : undefined,
       },
     };
 
@@ -144,9 +144,12 @@ export default function NewSimulationScreen() {
       const simulations = existing ? JSON.parse(existing) : [];
       simulations.push(simulation);
       await AsyncStorage.setItem("simulations", JSON.stringify(simulations));
-      
-      // Navigate to simulations tab to see results
-      router.replace("/(tabs)/simulations");
+
+      // Go straight to this simulation's own results, not the list
+      router.replace({
+        pathname: "/simulations/results",
+        params: { simulationId: simulation.id },
+      } as any);
     } catch (error) {
       Alert.alert("Error", "Failed to save simulation");
     }
@@ -300,7 +303,7 @@ export default function NewSimulationScreen() {
                   </View>
                 )}
 
-                {interventionType === "wind" && (
+                {(interventionType === "wind" || interventionType === "combined") && (
                   <View>
                     <Text className="text-foreground font-semibold mb-2">Number of Turbines</Text>
                     <TextInput
@@ -329,6 +332,14 @@ export default function NewSimulationScreen() {
                       style={{ borderWidth: 1, borderColor: colors.border }}
                     />
                     <Text className="text-muted text-xs mt-1">Typical: 20-40% thermal improvement</Text>
+                  </View>
+                )}
+
+                {interventionType === "combined" && (
+                  <View className="bg-surface rounded-xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
+                    <Text className="text-muted text-sm">
+                      A building envelope upgrade (insulation + windows) is included automatically as part of the combined strategy.
+                    </Text>
                   </View>
                 )}
               </View>
@@ -361,11 +372,14 @@ export default function NewSimulationScreen() {
                   {(interventionType === "hvac" || interventionType === "combined") && (
                     <Text className="text-foreground text-sm">• HVAC: {hvacEfficiency}% efficiency gain</Text>
                   )}
-                  {interventionType === "wind" && (
-                    <Text className="text-foreground text-sm">• Wind: {windTurbines} turbines ({parseInt(windTurbines) * 50} kW)</Text>
+                  {(interventionType === "wind" || interventionType === "combined") && (
+                    <Text className="text-foreground text-sm">• Wind: {windTurbines} turbines ({parseInt(windTurbines || "0") * 50} kW)</Text>
                   )}
                   {interventionType === "envelope" && (
                     <Text className="text-foreground text-sm">• Insulation: {insulationUpgrade}% upgrade</Text>
+                  )}
+                  {interventionType === "combined" && (
+                    <Text className="text-foreground text-sm">• Envelope: insulation + window upgrade included</Text>
                   )}
                 </View>
               </View>
