@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { View, Text, TextInput, TouchableOpacity, ScrollView, Alert } from "react-native";
 import { router } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
@@ -22,6 +22,23 @@ export default function SetupScreen() {
   const [buildingCount, setBuildingCount] = useState("");
   const [goals, setGoals] = useState("");
   const [showIndustryPicker, setShowIndustryPicker] = useState(false);
+  // If a profile already exists, this screen is doubling as the real
+  // "Edit Profile" screen (linked from Profile) rather than first-run setup.
+  const [isEditing, setIsEditing] = useState(false);
+
+  useEffect(() => {
+    (async () => {
+      const existing = await AsyncStorage.getItem("companyProfile");
+      if (existing) {
+        const profile = JSON.parse(existing);
+        setCompanyName(profile.companyName ?? "");
+        setIndustry(profile.industry ?? "");
+        setBuildingCount(profile.buildingCount ? String(profile.buildingCount) : "");
+        setGoals(profile.goals ?? "");
+        setIsEditing(true);
+      }
+    })();
+  }, []);
 
   const handleComplete = async () => {
     if (!companyName.trim()) {
@@ -45,8 +62,12 @@ export default function SetupScreen() {
 
       await AsyncStorage.setItem("companyProfile", JSON.stringify(profile));
       await AsyncStorage.setItem("onboardingCompleted", "true");
-      
-      router.replace("/(tabs)");
+
+      if (isEditing) {
+        router.back();
+      } else {
+        router.replace("/(tabs)");
+      }
     } catch (error) {
       Alert.alert("Error", "Failed to save profile. Please try again.");
     }
@@ -57,10 +78,12 @@ export default function SetupScreen() {
       <ScrollView className="flex-1 px-6" contentContainerStyle={{ paddingTop: 40, paddingBottom: 40 }}>
         <View className="mb-8">
           <Text className="text-3xl font-bold text-foreground mb-2">
-            Create Your Profile
+            {isEditing ? "Edit Your Profile" : "Create Your Profile"}
           </Text>
           <Text className="text-base text-muted">
-            Tell us about your organization to personalize your experience
+            {isEditing
+              ? "Update your organization's details"
+              : "Tell us about your organization to personalize your experience"}
           </Text>
         </View>
 
@@ -152,16 +175,20 @@ export default function SetupScreen() {
           className="bg-primary py-4 rounded-full items-center active:opacity-80"
           onPress={handleComplete}
         >
-          <Text className="text-background text-lg font-semibold">Complete Setup</Text>
+          <Text className="text-background text-lg font-semibold">
+            {isEditing ? "Save Changes" : "Complete Setup"}
+          </Text>
         </TouchableOpacity>
 
-        {/* Skip Link */}
-        <TouchableOpacity
-          className="py-4 items-center active:opacity-60"
-          onPress={() => router.replace("/(tabs)")}
-        >
-          <Text className="text-muted text-base font-medium">Skip for now</Text>
-        </TouchableOpacity>
+        {/* Skip Link -- only relevant during first-run onboarding */}
+        {!isEditing && (
+          <TouchableOpacity
+            className="py-4 items-center active:opacity-60"
+            onPress={() => router.replace("/(tabs)")}
+          >
+            <Text className="text-muted text-base font-medium">Skip for now</Text>
+          </TouchableOpacity>
+        )}
       </ScrollView>
     </ScreenContainer>
   );

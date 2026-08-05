@@ -1,8 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState, useCallback } from "react";
 import { ScrollView, Text, View, TouchableOpacity, Alert } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
-import { router } from "expo-router";
+import { router, useFocusEffect } from "expo-router";
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
+import { loadAllSimulations } from "@/lib/simulations";
 
 interface CompanyProfile {
   companyName: string;
@@ -13,10 +15,16 @@ interface CompanyProfile {
 
 export default function ProfileScreen() {
   const [profile, setProfile] = useState<CompanyProfile | null>(null);
+  const [buildingsCount, setBuildingsCount] = useState(0);
+  const [simulationsCount, setSimulationsCount] = useState(0);
+  const [blockchainCount, setBlockchainCount] = useState(0);
 
-  useEffect(() => {
-    loadProfile();
-  }, []);
+  useFocusEffect(
+    useCallback(() => {
+      loadProfile();
+      loadStats();
+    }, [])
+  );
 
   const loadProfile = async () => {
     try {
@@ -29,17 +37,33 @@ export default function ProfileScreen() {
     }
   };
 
+  const loadStats = async () => {
+    try {
+      const buildingsData = await AsyncStorage.getItem("buildings");
+      setBuildingsCount(buildingsData ? JSON.parse(buildingsData).length : 0);
+
+      const simulations = await loadAllSimulations();
+      setSimulationsCount(simulations.length);
+
+      const txnData = await AsyncStorage.getItem("blockchain_transactions");
+      setBlockchainCount(txnData ? JSON.parse(txnData).length : 0);
+    } catch (error) {
+      console.error("Failed to load profile stats:", error);
+    }
+  };
+
   const handleSignOut = async () => {
     Alert.alert(
       "Sign Out",
-      "Are you sure you want to sign out?",
+      "This clears your company profile and returns you to setup. Your buildings and simulations stay saved on this device.",
       [
         { text: "Cancel", style: "cancel" },
         {
           text: "Sign Out",
           style: "destructive",
           onPress: async () => {
-            await AsyncStorage.clear();
+            await AsyncStorage.removeItem("companyProfile");
+            await AsyncStorage.removeItem("onboardingCompleted");
             router.replace("/onboarding/welcome");
           },
         },
@@ -47,16 +71,28 @@ export default function ProfileScreen() {
     );
   };
 
-  const SettingItem = ({ icon, title, onPress }: { icon: string; title: string; onPress: () => void }) => (
+  const SettingItem = ({
+    icon,
+    title,
+    onPress,
+    comingSoon,
+  }: {
+    icon: string;
+    title: string;
+    onPress?: () => void;
+    comingSoon?: boolean;
+  }) => (
     <TouchableOpacity
       className="flex-row items-center justify-between py-4 border-b border-border active:opacity-70"
-      onPress={onPress}
+      onPress={comingSoon ? undefined : onPress}
+      disabled={comingSoon}
+      style={{ opacity: comingSoon ? 0.55 : 1 }}
     >
       <View className="flex-row items-center flex-1">
         <Text className="text-2xl mr-3">{icon}</Text>
         <Text className="text-base text-foreground">{title}</Text>
       </View>
-      <Text className="text-muted text-xl">›</Text>
+      {comingSoon ? <Badge label="Coming soon" tone="neutral" /> : <Text className="text-muted text-xl">›</Text>}
     </TouchableOpacity>
   );
 
@@ -81,26 +117,24 @@ export default function ProfileScreen() {
               <Text className="text-base text-muted">{profile?.industry || "Industry"}</Text>
             </View>
 
-            {profile?.buildingCount !== undefined && (
-              <View className="flex-row justify-around border-t border-border pt-4">
-                <View className="items-center">
-                  <Text className="text-2xl font-bold text-foreground">{profile.buildingCount}</Text>
-                  <Text className="text-sm text-muted">Buildings</Text>
-                </View>
-                <View className="items-center">
-                  <Text className="text-2xl font-bold text-foreground">12</Text>
-                  <Text className="text-sm text-muted">Simulations</Text>
-                </View>
-                <View className="items-center">
-                  <Text className="text-2xl font-bold text-foreground">127</Text>
-                  <Text className="text-sm text-muted">Blockchain Txns</Text>
-                </View>
+            <View className="flex-row justify-around border-t border-border pt-4">
+              <View className="items-center">
+                <Text className="text-2xl font-bold text-foreground">{buildingsCount}</Text>
+                <Text className="text-sm text-muted">Buildings</Text>
               </View>
-            )}
+              <View className="items-center">
+                <Text className="text-2xl font-bold text-foreground">{simulationsCount}</Text>
+                <Text className="text-sm text-muted">Simulations</Text>
+              </View>
+              <View className="items-center">
+                <Text className="text-2xl font-bold text-foreground">{blockchainCount}</Text>
+                <Text className="text-sm text-muted">Blockchain Txns</Text>
+              </View>
+            </View>
 
             <TouchableOpacity
               className="bg-primary/10 border border-primary rounded-xl py-3 items-center mt-4 active:opacity-70"
-              onPress={() => Alert.alert("Edit Profile", "This would open the profile editor")}
+              onPress={() => router.push("/onboarding/setup")}
             >
               <Text className="text-primary font-semibold">Edit Profile</Text>
             </TouchableOpacity>
@@ -121,26 +155,10 @@ export default function ProfileScreen() {
         <View className="px-6 mb-6">
           <Text className="text-lg font-bold text-foreground mb-3">Account Settings</Text>
           <View className="bg-surface rounded-xl px-4">
-            <SettingItem
-              icon="🔔"
-              title="Notifications"
-              onPress={() => Alert.alert("Notifications", "Notification settings would open here")}
-            />
-            <SettingItem
-              icon="🔄"
-              title="Data Sync"
-              onPress={() => Alert.alert("Data Sync", "Data sync settings would open here")}
-            />
-            <SettingItem
-              icon="📏"
-              title="Units"
-              onPress={() => Alert.alert("Units", "Units preference (metric/imperial) would open here")}
-            />
-            <SettingItem
-              icon="🌐"
-              title="Language"
-              onPress={() => Alert.alert("Language", "Language selector would open here")}
-            />
+            <SettingItem icon="🔔" title="Notifications" comingSoon />
+            <SettingItem icon="🔄" title="Data Sync" comingSoon />
+            <SettingItem icon="📏" title="Units" comingSoon />
+            <SettingItem icon="🌐" title="Language" comingSoon />
           </View>
         </View>
 
@@ -157,12 +175,13 @@ export default function ProfileScreen() {
                 <Text className="text-xs font-medium text-primary">Active</Text>
               </View>
             </View>
-            <TouchableOpacity
-              className="bg-primary rounded-xl py-3 items-center active:opacity-80"
-              onPress={() => Alert.alert("Upgrade", "Subscription plans would be shown here")}
+            <View
+              className="rounded-xl py-3 items-center flex-row justify-center gap-2 border border-border"
+              style={{ opacity: 0.6 }}
             >
-              <Text className="text-background font-semibold">Upgrade to Pro</Text>
-            </TouchableOpacity>
+              <Text className="text-muted font-semibold">Upgrade to Pro</Text>
+              <Badge label="Coming soon" tone="neutral" />
+            </View>
           </View>
         </View>
 
@@ -170,26 +189,10 @@ export default function ProfileScreen() {
         <View className="px-6 mb-6">
           <Text className="text-lg font-bold text-foreground mb-3">Support & Resources</Text>
           <View className="bg-surface rounded-xl px-4">
-            <SettingItem
-              icon="❓"
-              title="Help Center"
-              onPress={() => Alert.alert("Help Center", "Help documentation would open here")}
-            />
-            <SettingItem
-              icon="💬"
-              title="Contact Support"
-              onPress={() => Alert.alert("Contact Support", "Support contact form would open here")}
-            />
-            <SettingItem
-              icon="🎓"
-              title="Tutorial Videos"
-              onPress={() => Alert.alert("Tutorials", "Video tutorials would be shown here")}
-            />
-            <SettingItem
-              icon="📚"
-              title="API Documentation"
-              onPress={() => Alert.alert("API Docs", "API documentation would open here")}
-            />
+            <SettingItem icon="❓" title="Help Center" comingSoon />
+            <SettingItem icon="💬" title="Contact Support" comingSoon />
+            <SettingItem icon="🎓" title="Tutorial Videos" comingSoon />
+            <SettingItem icon="📚" title="API Documentation" comingSoon />
           </View>
         </View>
 
@@ -197,26 +200,16 @@ export default function ProfileScreen() {
         <View className="px-6 mb-6">
           <Text className="text-lg font-bold text-foreground mb-3">About</Text>
           <View className="bg-surface rounded-xl px-4">
-            <SettingItem
-              icon="ℹ️"
-              title="App Version"
-              onPress={() => Alert.alert("Version", "Digital Twin Platform v1.0.0")}
-            />
-            <SettingItem
-              icon="📄"
-              title="Terms of Service"
-              onPress={() => Alert.alert("Terms", "Terms of Service would open here")}
-            />
-            <SettingItem
-              icon="🔒"
-              title="Privacy Policy"
-              onPress={() => Alert.alert("Privacy", "Privacy Policy would open here")}
-            />
-            <SettingItem
-              icon="⚖️"
-              title="Licenses"
-              onPress={() => Alert.alert("Licenses", "Open source licenses would be shown here")}
-            />
+            <View className="flex-row items-center justify-between py-4 border-b border-border">
+              <View className="flex-row items-center flex-1">
+                <Text className="text-2xl mr-3">ℹ️</Text>
+                <Text className="text-base text-foreground">App Version</Text>
+              </View>
+              <Text className="text-muted text-sm">1.0.0</Text>
+            </View>
+            <SettingItem icon="📄" title="Terms of Service" comingSoon />
+            <SettingItem icon="🔒" title="Privacy Policy" comingSoon />
+            <SettingItem icon="⚖️" title="Licenses" comingSoon />
           </View>
         </View>
 
