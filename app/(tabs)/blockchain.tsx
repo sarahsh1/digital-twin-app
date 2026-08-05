@@ -4,6 +4,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
 
 interface Transaction {
@@ -14,6 +15,7 @@ interface Transaction {
   verificationStatus: "Verified" | "Pending";
   timestamp: string;
   blockchainId: string;
+  isDemo?: boolean;
 }
 
 const mockTransactions: Transaction[] = [
@@ -25,6 +27,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Verified",
     timestamp: "2 hours ago",
     blockchainId: "0x7f3a...9c2e",
+    isDemo: true,
   },
   {
     id: "2",
@@ -34,6 +37,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Verified",
     timestamp: "1 day ago",
     blockchainId: "0x4b1c...7d8f",
+    isDemo: true,
   },
   {
     id: "3",
@@ -43,6 +47,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Pending",
     timestamp: "3 days ago",
     blockchainId: "0x9e5a...3f1b",
+    isDemo: true,
   },
   {
     id: "4",
@@ -52,6 +57,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Verified",
     timestamp: "1 week ago",
     blockchainId: "0x2c7d...8a4e",
+    isDemo: true,
   },
 ];
 
@@ -143,22 +149,20 @@ export default function BlockchainScreen() {
       {/* Header */}
       <View className="flex-row items-start justify-between mb-4">
         <View className="flex-1">
-          <Text className="text-lg font-bold text-foreground mb-2">{transaction.supplierName}</Text>
+          <View className="flex-row items-center gap-2 mb-2 flex-wrap">
+            <Text className="text-lg font-bold text-foreground">{transaction.supplierName}</Text>
+            {transaction.isDemo && <Badge label="Sample" tone="sample" />}
+          </View>
           <View className="flex-row items-center">
             <View className="bg-secondary/20 px-3 py-1.5 rounded-full">
               <Text className="text-sm font-medium text-secondary">{transaction.transactionType}</Text>
             </View>
           </View>
         </View>
-        <View className={`px-3 py-1.5 rounded-full ${
-          transaction.verificationStatus === "Verified" ? "bg-success/20" : "bg-warning/20"
-        }`}>
-          <Text className={`text-sm font-medium ${
-            transaction.verificationStatus === "Verified" ? "text-success" : "text-warning"
-          }`}>
-            {transaction.verificationStatus === "Verified" ? "✓ Verified" : "⏳ Pending"}
-          </Text>
-        </View>
+        <Badge
+          label={transaction.verificationStatus === "Verified" ? "✓ Verified" : "⏳ Pending"}
+          tone={transaction.verificationStatus === "Verified" ? "success" : "warning"}
+        />
       </View>
 
       {/* CO2 Value */}
@@ -233,8 +237,11 @@ export default function BlockchainScreen() {
 
                 {/* Blockchain Verification */}
                 <View className="bg-surface rounded-2xl p-5 mb-4">
-                  <Text className="text-sm font-semibold text-muted mb-4">BLOCKCHAIN VERIFICATION</Text>
-                  
+                  <View className="flex-row items-center justify-between mb-4">
+                    <Text className="text-sm font-semibold text-muted">BLOCKCHAIN VERIFICATION</Text>
+                    <Badge label="Demo data" tone="neutral" />
+                  </View>
+
                   <View className="mb-4">
                     <Text className="text-sm text-muted mb-1">Network</Text>
                     <Text className="text-lg font-semibold text-foreground">Energy Web Chain</Text>
@@ -256,16 +263,15 @@ export default function BlockchainScreen() {
                   </View>
                 </View>
 
-                {/* Actions */}
-                <TouchableOpacity
-                  className="bg-secondary/10 border border-secondary rounded-xl py-4 items-center active:opacity-70"
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    Alert.alert("Blockchain Explorer", "This would open the transaction in a blockchain explorer");
-                  }}
+                {/* Honest disclosure -- this prototype isn't connected to a live chain */}
+                <View
+                  className="rounded-xl py-4 px-4 items-center"
+                  style={{ borderWidth: 1, borderColor: colors.border }}
                 >
-                  <Text className="text-secondary text-lg font-semibold">View on Blockchain Explorer</Text>
-                </TouchableOpacity>
+                  <Text className="text-muted text-sm text-center">
+                    This is illustrative verification data. This prototype isn't connected to a live blockchain network yet, so there's no explorer link to open.
+                  </Text>
+                </View>
               </>
             )}
           </ScrollView>

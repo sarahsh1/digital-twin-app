@@ -6,6 +6,7 @@ import Animated, { FadeInDown } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
 import { analyzeCarbonImpact, type BuildingData, type SimulationScenario } from "@/lib/carbonAnalysis";
 
@@ -18,6 +19,7 @@ interface Building {
   size: number;
   floors: number;
   location: string;
+  isDemo?: boolean;
 }
 
 export default function NewSimulationScreen() {
@@ -218,7 +220,10 @@ export default function NewSimulationScreen() {
                         borderColor: selectedBuilding?.id === building.id ? colors.primary : colors.border,
                       }}
                     >
-                      <Text className="text-foreground text-lg font-bold mb-1">{building.name}</Text>
+                      <View className="flex-row items-center gap-2 mb-1">
+                        <Text className="text-foreground text-lg font-bold">{building.name}</Text>
+                        {building.isDemo && <Badge label="Sample" tone="sample" />}
+                      </View>
                       <Text className="text-muted text-sm capitalize">{building.type} • {building.size.toLocaleString()} sq ft • {building.floors} floors</Text>
                       <Text className="text-muted text-sm">{building.location}</Text>
                     </TouchableOpacity>

@@ -6,30 +6,54 @@ import {
   Image,
   Dimensions
 } from 'react-native'
-import { Link } from 'expo-router'
+import { Link, useFocusEffect } from 'expo-router'
+import { useCallback, useState } from 'react'
 import { LinearGradient } from 'expo-linear-gradient'
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
+import AsyncStorage from '@react-native-async-storage/async-storage'
 
 import { ScreenContainer } from '@/components/screen-container'
 import { useColors } from '@/hooks/use-colors'
-import { demoBuildings } from '@/lib/demoBuildings'
-import { getAllSimulations } from '@/lib/demoSimulations'
+import { loadDemoBuildings } from '@/lib/demoBuildings'
+import { loadAllSimulations, type FormattedSimulation } from '@/lib/simulations'
 
 const { width } = Dimensions.get('window')
 
+interface BuildingSummary {
+  id: string
+  isDemo?: boolean
+}
+
 export default function HomeScreen() {
   const colors = useColors()
+  const [buildings, setBuildings] = useState<BuildingSummary[]>([])
+  const [simulations, setSimulations] = useState<FormattedSimulation[]>([])
 
-  // Calculate real statistics
-  const buildingsCount = demoBuildings.length
-  const simulationsCount = getAllSimulations().length
-  const totalCO2Saved = getAllSimulations().reduce(
-    (sum, sim) => sum + sim.carbonReduction * 10,
+  useFocusEffect(
+    useCallback(() => {
+      loadPortfolio()
+    }, [])
+  )
+
+  const loadPortfolio = async () => {
+    await loadDemoBuildings()
+    const buildingsData = await AsyncStorage.getItem('buildings')
+    setBuildings(buildingsData ? JSON.parse(buildingsData) : [])
+    setSimulations(await loadAllSimulations())
+  }
+
+  // Real portfolio statistics -- these reflect whatever is actually stored
+  // on this device, not a fixed demo-data count.
+  const buildingsCount = buildings.length
+  const sampleBuildingsCount = buildings.filter((b) => b.isDemo).length
+  const simulationsCount = simulations.length
+  const totalCO2Saved = simulations.reduce(
+    (sum, sim) => sum + sim.results.projected.annualReduction,
     0
-  ) // Approximate
-  const totalSavings = getAllSimulations().reduce(
-    (sum, sim) => sum + sim.costSavings,
+  )
+  const totalSavings = simulations.reduce(
+    (sum, sim) => sum + sim.results.financial.annualSavings,
     0
   )
 
@@ -137,6 +161,11 @@ export default function HomeScreen() {
               <Text className="text-muted text-sm mt-1">Cost Savings</Text>
             </View>
           </ScrollView>
+          {sampleBuildingsCount > 0 && (
+            <Text className="text-muted text-xs px-4 -mt-2 mb-2">
+              Includes {sampleBuildingsCount} sample building{sampleBuildingsCount === 1 ? '' : 's'} for reference
+            </Text>
+          )}
         </Animated.View>
 
         {/* Hero Image Section */}

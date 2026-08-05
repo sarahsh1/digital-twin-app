@@ -14,6 +14,7 @@ export interface DemoBuilding {
   description: string;
   currentEmissions: number; // tons CO2/year
   energyConsumption: number; // kWh/year
+  isDemo: true;
 }
 
 export const demoBuildings: DemoBuilding[] = [
@@ -32,6 +33,7 @@ export const demoBuildings: DemoBuilding[] = [
     model3D: require("@/assets/demo-buildings/sce-building-3d-wireframe.png"),
     solarModel: require("@/assets/demo-buildings/sce-building-solar-simulation.png"),
     createdAt: new Date("2024-01-01").toISOString(),
+    isDemo: true,
   },
   // 2. Bapco
   {
@@ -48,6 +50,7 @@ export const demoBuildings: DemoBuilding[] = [
     model3D: require("@/assets/demo-buildings/bapco-refinery-3d.png"),
     solarModel: require("@/assets/demo-buildings/bapco-refinery-solar.png"),
     createdAt: new Date("2024-01-02").toISOString(),
+    isDemo: true,
   },
   // 3. Alba
   {
@@ -64,6 +67,7 @@ export const demoBuildings: DemoBuilding[] = [
     model3D: require("@/assets/demo-buildings/alba-facility-3d.png"),
     solarModel: require("@/assets/demo-buildings/alba-facility-solar.png"),
     createdAt: new Date("2024-01-03").toISOString(),
+    isDemo: true,
   },
   // 4. Kingdom University
   {
@@ -80,6 +84,7 @@ export const demoBuildings: DemoBuilding[] = [
     model3D: require("@/assets/demo-buildings/kingdom-university-3d.png"),
     solarModel: require("@/assets/demo-buildings/kingdom-university-solar.png"),
     createdAt: new Date("2024-01-04").toISOString(),
+    isDemo: true,
   },
   // 5. King Hamad Hospital
   {
@@ -96,6 +101,7 @@ export const demoBuildings: DemoBuilding[] = [
     model3D: require("@/assets/demo-buildings/king-hamad-hospital-3d.png"),
     solarModel: require("@/assets/demo-buildings/king-hamad-hospital-solar.png"),
     createdAt: new Date("2024-01-05").toISOString(),
+    isDemo: true,
   },
   // 6. Almarifa School
   {
@@ -112,6 +118,7 @@ export const demoBuildings: DemoBuilding[] = [
     model3D: require("@/assets/demo-buildings/almarifa-school-3d.png"),
     solarModel: require("@/assets/demo-buildings/almarifa-school-solar.png"),
     createdAt: new Date("2024-01-06").toISOString(),
+    isDemo: true,
   },
 ];
 

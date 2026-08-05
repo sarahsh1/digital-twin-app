@@ -36,7 +36,7 @@ export function Building3DView({ buildingId, showSolarSimulation = false, model3
             style={{ opacity: 0.95 }}
           >
             <Text className={`text-center font-semibold ${viewMode === "wireframe" ? "text-background" : "text-foreground"}`}>
-              Digital Twin
+              Rendering
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
@@ -45,7 +45,7 @@ export function Building3DView({ buildingId, showSolarSimulation = false, model3
             style={{ opacity: 0.95 }}
           >
             <Text className={`text-center font-semibold ${viewMode === "solar" ? "text-background" : "text-foreground"}`}>
-              Solar Simulation
+              Solar Overlay
             </Text>
           </TouchableOpacity>
         </View>
@@ -53,7 +53,7 @@ export function Building3DView({ buildingId, showSolarSimulation = false, model3
 
       {/* Legend */}
       <View className="mt-4 bg-surface rounded-xl p-4">
-        <Text className="text-sm font-semibold text-foreground mb-3">Visualization Legend</Text>
+        <Text className="text-sm font-semibold text-foreground mb-3">Illustration Legend</Text>
         {viewMode === "wireframe" ? (
           <View className="gap-2">
             <View className="flex-row items-center">

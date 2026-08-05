@@ -8,6 +8,7 @@ import * as Haptics from "expo-haptics";
 import { loadDemoBuildings } from "@/lib/demoBuildings";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
 
 interface Building {
@@ -19,6 +20,7 @@ interface Building {
   location: string;
   image?: string;
   createdAt: string;
+  isDemo?: boolean;
 }
 
 export default function BuildingsScreen() {
@@ -161,7 +163,10 @@ export default function BuildingsScreen() {
                       )}
                       
                       <View className="p-4">
-                        <Text className="text-foreground text-xl font-bold mb-1">{building.name}</Text>
+                        <View className="flex-row items-center gap-2 mb-1">
+                          <Text className="text-foreground text-xl font-bold">{building.name}</Text>
+                          {building.isDemo && <Badge label="Sample" tone="sample" />}
+                        </View>
                         <Text className="text-muted text-sm capitalize mb-2">{building.type}</Text>
                         
                         <View className="flex-row gap-4 mb-3">

@@ -7,6 +7,7 @@ import * as Haptics from "expo-haptics";
 import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
 import { Building3DView } from "@/components/Building3DView";
 import { IoTDashboard } from "@/components/IoTDashboard";
@@ -27,6 +28,7 @@ interface Building {
   description?: string;
   currentEmissions?: number;
   energyConsumption?: number;
+  isDemo?: boolean;
 }
 
 export default function BuildingDetailScreen() {
@@ -108,7 +110,10 @@ export default function BuildingDetailScreen() {
               <Ionicons name="arrow-back" size={24} color={colors.foreground} />
             </TouchableOpacity>
             <View className="flex-1">
-              <Text className="text-foreground text-xl font-bold">{building.name}</Text>
+              <View className="flex-row items-center gap-2">
+                <Text className="text-foreground text-xl font-bold">{building.name}</Text>
+                {building.isDemo && <Badge label="Sample" tone="sample" />}
+              </View>
               <Text className="text-muted text-sm capitalize">{building.type}</Text>
             </View>
           </View>
@@ -158,9 +163,10 @@ export default function BuildingDetailScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {activeTab === "overview" && (
             <Animated.View entering={FadeInDown.duration(400)} className="p-4">
-              {/* 3D Visualization */}
+              {/* Building Rendering */}
               <View className="mb-6">
-                <Text className="text-foreground text-lg font-bold mb-3">Digital Twin Visualization</Text>
+                <Text className="text-foreground text-lg font-bold mb-1">Building Rendering</Text>
+                <Text className="text-muted text-xs mb-3">Static illustration, not a live 3D model</Text>
                 <Building3DView buildingId={building.id} model3D={building.model3D} solarModel={building.solarModel} />
               </View>
 

@@ -71,8 +71,8 @@ export function IoTDashboard() {
         <Text className="text-xs text-muted">{metric.name}</Text>
         <View className="mt-2 pt-2 border-t border-border">
           <View className="flex-row items-center">
-            <View className="w-2 h-2 rounded-full mr-2 bg-success" />
-            <Text className="text-xs text-muted">Live</Text>
+            <View className="w-2 h-2 rounded-full mr-2 bg-secondary" />
+            <Text className="text-xs text-muted">Simulated</Text>
           </View>
         </View>
       </View>
@@ -82,10 +82,10 @@ export function IoTDashboard() {
   return (
     <View className="mb-6">
       <View className="px-6 mb-3 flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-foreground">Live IoT Data</Text>
+        <Text className="text-lg font-bold text-foreground">Sample System Data</Text>
         <View className="flex-row items-center">
-          <View className="w-2 h-2 rounded-full bg-success mr-2" />
-          <Text className="text-xs text-muted">Real-time</Text>
+          <View className="w-2 h-2 rounded-full bg-secondary mr-2" />
+          <Text className="text-xs text-muted">Simulated, not connected to sensors</Text>
         </View>
       </View>
       <ScrollView
