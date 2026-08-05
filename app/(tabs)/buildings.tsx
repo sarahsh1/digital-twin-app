@@ -1,15 +1,24 @@
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, router, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
 import { loadDemoBuildings } from "@/lib/demoBuildings";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { Badge } from "@/components/ui/badge";
+import { ScreenTitle } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
+
+const buildingTypeIcon: Record<string, keyof typeof Ionicons.glyphMap> = {
+  office: "business",
+  residential: "home",
+  industrial: "cog",
+  retail: "storefront",
+};
 
 interface Building {
   id: string;
@@ -82,8 +91,8 @@ export default function BuildingsScreen() {
       <View className="flex-1">
         {/* Header */}
         <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
-          <Text className="text-foreground text-2xl font-bold mb-4">Buildings</Text>
-          
+          <ScreenTitle className="mb-4">Buildings</ScreenTitle>
+
           {/* Search Bar */}
           <TextInput
             value={searchQuery}
@@ -108,11 +117,12 @@ export default function BuildingsScreen() {
                 Add your first building to start analyzing carbon reduction opportunities
               </Text>
               <Link href="/buildings/add" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                  className="bg-primary rounded-xl px-6 py-3"
+                  className="bg-primary rounded-xl px-6 py-3 flex-row items-center gap-2"
                 >
-                  <Text className="text-white font-semibold">+ Add Building</Text>
+                  <Ionicons name="add" size={18} color="#fff" />
+                  <Text className="text-white font-semibold">Add Building</Text>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
@@ -128,7 +138,7 @@ export default function BuildingsScreen() {
                     <Text className="text-white text-lg font-bold">Add New Building</Text>
                     <Text className="text-white/80 text-sm">Upload or design from scratch</Text>
                   </View>
-                  <Text className="text-white text-3xl">+</Text>
+                  <Ionicons name="add-circle" size={28} color="#fff" />
                 </TouchableOpacity>
               </Link>
 
@@ -150,15 +160,15 @@ export default function BuildingsScreen() {
                           resizeMode="cover"
                         />
                       ) : (
-                        <View 
+                        <View
                           className="w-full items-center justify-center"
                           style={{ height: 220, backgroundColor: colors.primary + "20" }}
                         >
-                          <Text style={{ fontSize: 60 }}>
-                            {building.type === "office" ? "🏢" : 
-                             building.type === "residential" ? "🏘️" : 
-                             building.type === "industrial" ? "🏭" : "🏬"}
-                          </Text>
+                          <Ionicons
+                            name={buildingTypeIcon[building.type] ?? "business"}
+                            size={56}
+                            color={colors.primary}
+                          />
                         </View>
                       )}
                       
@@ -180,8 +190,11 @@ export default function BuildingsScreen() {
                           </View>
                         </View>
                         
-                        <Text className="text-muted text-sm mb-4">📍 {building.location}</Text>
-                        
+                        <View className="flex-row items-center gap-1 mb-4">
+                          <Ionicons name="location" size={14} color={colors.muted} />
+                          <Text className="text-muted text-sm">{building.location}</Text>
+                        </View>
+
                         {/* Actions */}
                         <View className="flex-row gap-2">
                           <TouchableOpacity
@@ -213,7 +226,7 @@ export default function BuildingsScreen() {
                             className="bg-error/20 rounded-xl px-4 py-3 items-center justify-center"
                             style={{ borderWidth: 1, borderColor: colors.error }}
                           >
-                            <Text className="text-error font-semibold">🗑️</Text>
+                            <Ionicons name="trash" size={18} color={colors.error} />
                           </TouchableOpacity>
                         </View>
                       </View>

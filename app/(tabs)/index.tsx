@@ -12,8 +12,11 @@ import { LinearGradient } from 'expo-linear-gradient'
 import Animated, { FadeInDown, FadeInUp } from 'react-native-reanimated'
 import * as Haptics from 'expo-haptics'
 import AsyncStorage from '@react-native-async-storage/async-storage'
+import { Ionicons } from '@expo/vector-icons'
 
 import { ScreenContainer } from '@/components/screen-container'
+import { MetricCard, Card } from '@/components/ui/card'
+import { SectionHeader, Caption } from '@/components/ui/typography'
 import { useColors } from '@/hooks/use-colors'
 import { loadDemoBuildings } from '@/lib/demoBuildings'
 import { loadAllSimulations, type FormattedSimulation } from '@/lib/simulations'
@@ -121,50 +124,20 @@ export default function HomeScreen() {
               gap: 12
             }}
           >
-            <View
-              className="bg-surface rounded-2xl p-4 w-36"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
-              <Text className="text-primary text-3xl font-bold">
-                {buildingsCount}
-              </Text>
-              <Text className="text-muted text-sm mt-1">Buildings</Text>
-            </View>
-
-            <View
-              className="bg-surface rounded-2xl p-4 w-36"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
-              <Text className="text-primary text-3xl font-bold">
-                {simulationsCount}
-              </Text>
-              <Text className="text-muted text-sm mt-1">Simulations</Text>
-            </View>
-
-            <View
-              className="bg-surface rounded-2xl p-4 w-36"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
-              <Text className="text-secondary text-3xl font-bold">
-                {Math.round(totalCO2Saved)}t
-              </Text>
-              <Text className="text-muted text-sm mt-1">CO₂ Saved</Text>
-            </View>
-
-            <View
-              className="bg-surface rounded-2xl p-4 w-36"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
-              <Text className="text-success text-3xl font-bold">
-                ${(totalSavings / 1000000).toFixed(1)}M
-              </Text>
-              <Text className="text-muted text-sm mt-1">Cost Savings</Text>
-            </View>
+            <MetricCard label="Buildings" value={String(buildingsCount)} tone="primary" width={144} />
+            <MetricCard label="Simulations" value={String(simulationsCount)} tone="primary" width={144} />
+            <MetricCard label="CO₂ Saved" value={`${Math.round(totalCO2Saved)}t`} tone="secondary" width={144} />
+            <MetricCard
+              label="Cost Savings"
+              value={`$${(totalSavings / 1000000).toFixed(1)}M`}
+              tone="success"
+              width={144}
+            />
           </ScrollView>
           {sampleBuildingsCount > 0 && (
-            <Text className="text-muted text-xs px-4 -mt-2 mb-2">
+            <Caption className="px-4 -mt-2 mb-2">
               Includes {sampleBuildingsCount} sample building{sampleBuildingsCount === 1 ? '' : 's'} for reference
-            </Text>
+            </Caption>
           )}
         </Animated.View>
 
@@ -185,9 +158,7 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(600).duration(600)}
           className="px-4 mt-6"
         >
-          <Text className="text-foreground text-lg font-bold mb-4">
-            Quick Actions
-          </Text>
+          <SectionHeader className="mb-4">Quick Actions</SectionHeader>
 
           <View className="gap-3">
             <Link href="/buildings/add" asChild onPress={handlePress}>
@@ -208,7 +179,7 @@ export default function HomeScreen() {
                     Upload or design new building
                   </Text>
                 </View>
-                <Text className="text-white text-3xl">+</Text>
+                <Ionicons name="add-circle" size={28} color="#fff" />
               </TouchableOpacity>
             </Link>
 
@@ -225,7 +196,7 @@ export default function HomeScreen() {
                     Run carbon reduction scenario
                   </Text>
                 </View>
-                <Text className="text-primary text-2xl">⚡</Text>
+                <Ionicons name="flash" size={24} color={colors.primary} />
               </TouchableOpacity>
             </Link>
           </View>
@@ -236,18 +207,13 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(800).duration(600)}
           className="px-4 mt-6"
         >
-          <Text className="text-foreground text-lg font-bold mb-4">
-            Platform Features
-          </Text>
+          <SectionHeader className="mb-4">Platform Features</SectionHeader>
 
           <View className="gap-4">
-            <View
-              className="bg-surface rounded-2xl p-4"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
+            <Card>
               <View className="flex-row items-center mb-2">
                 <View className="bg-primary/20 w-10 h-10 rounded-full items-center justify-center mr-3">
-                  <Text className="text-primary text-xl">🏢</Text>
+                  <Ionicons name="business" size={20} color={colors.primary} />
                 </View>
                 <Text className="text-foreground font-bold text-base flex-1">
                   Digital Twin Visualization
@@ -257,15 +223,12 @@ export default function HomeScreen() {
                 Convert building sketches into interactive 3D models with IoT
                 sensor integration
               </Text>
-            </View>
+            </Card>
 
-            <View
-              className="bg-surface rounded-2xl p-4"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
+            <Card>
               <View className="flex-row items-center mb-2">
                 <View className="bg-secondary/20 w-10 h-10 rounded-full items-center justify-center mr-3">
-                  <Text className="text-secondary text-xl">🤖</Text>
+                  <Ionicons name="hardware-chip" size={20} color={colors.secondary} />
                 </View>
                 <Text className="text-foreground font-bold text-base flex-1">
                   AI-Powered Analysis
@@ -275,15 +238,12 @@ export default function HomeScreen() {
                 Intelligent carbon forecasting and cost-benefit analysis for
                 sustainability interventions
               </Text>
-            </View>
+            </Card>
 
-            <View
-              className="bg-surface rounded-2xl p-4"
-              style={{ borderWidth: 1, borderColor: colors.border }}
-            >
+            <Card>
               <View className="flex-row items-center mb-2">
                 <View className="bg-success/20 w-10 h-10 rounded-full items-center justify-center mr-3">
-                  <Text className="text-success text-xl">🔗</Text>
+                  <Ionicons name="link" size={20} color={colors.success} />
                 </View>
                 <Text className="text-foreground font-bold text-base flex-1">
                   Blockchain Carbon Accounting
@@ -293,7 +253,7 @@ export default function HomeScreen() {
                 Immutable supply chain carbon tracking with verified Scope 3
                 emissions data
               </Text>
-            </View>
+            </Card>
           </View>
         </Animated.View>
 
@@ -314,17 +274,12 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(1200).duration(600)}
           className="px-4 mt-6"
         >
-          <Text className="text-foreground text-lg font-bold mb-4">
-            AI Insights
-          </Text>
+          <SectionHeader className="mb-4">AI Insights</SectionHeader>
 
-          <View
-            className="bg-surface rounded-2xl p-5"
-            style={{ borderWidth: 1, borderColor: colors.border }}
-          >
+          <Card className="p-5">
             <View className="flex-row items-start mb-3">
               <View className="bg-primary/20 w-8 h-8 rounded-full items-center justify-center mr-3 mt-1">
-                <Text className="text-primary text-base">💡</Text>
+                <Ionicons name="bulb" size={16} color={colors.primary} />
               </View>
               <View className="flex-1">
                 <Text className="text-foreground font-semibold mb-1">
@@ -336,7 +291,7 @@ export default function HomeScreen() {
                 </Text>
               </View>
             </View>
-          </View>
+          </Card>
         </Animated.View>
       </ScrollView>
     </ScreenContainer>
