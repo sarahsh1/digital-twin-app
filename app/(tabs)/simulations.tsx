@@ -3,11 +3,21 @@ import { useState, useCallback } from "react";
 import { Link, router, useFocusEffect } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { Badge } from "@/components/ui/badge";
+import { ScreenTitle } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
 import { loadAllSimulations, type FormattedSimulation } from "@/lib/simulations";
+
+const interventionIcon: Record<string, keyof typeof Ionicons.glyphMap> = {
+  solar: "sunny",
+  hvac: "snow",
+  wind: "cloudy",
+  envelope: "construct",
+  combined: "flash",
+};
 
 export default function SimulationsScreen() {
   const colors = useColors();
@@ -24,23 +34,12 @@ export default function SimulationsScreen() {
     setSimulations(all);
   };
 
-  const getInterventionIcon = (type: string) => {
-    switch (type) {
-      case "solar": return "☀️";
-      case "hvac": return "❄️";
-      case "wind": return "💨";
-      case "envelope": return "🏗️";
-      case "combined": return "⚡";
-      default: return "🔧";
-    }
-  };
-
   return (
     <ScreenContainer>
       <View className="flex-1">
         {/* Header */}
         <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
-          <Text className="text-foreground text-2xl font-bold">Simulations</Text>
+          <ScreenTitle>Simulations</ScreenTitle>
         </View>
 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
@@ -56,11 +55,12 @@ export default function SimulationsScreen() {
                 Run your first simulation to analyze carbon reduction opportunities
               </Text>
               <Link href="/simulations/new" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                  className="bg-primary rounded-xl px-6 py-3"
+                  className="bg-primary rounded-xl px-6 py-3 flex-row items-center gap-2"
                 >
-                  <Text className="text-white font-semibold">+ New Simulation</Text>
+                  <Ionicons name="add" size={18} color="#fff" />
+                  <Text className="text-white font-semibold">New Simulation</Text>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
@@ -68,7 +68,7 @@ export default function SimulationsScreen() {
             <>
               {/* New Simulation Button */}
               <Link href="/simulations/new" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                   className="bg-primary rounded-2xl p-4 my-4 flex-row items-center justify-between"
                 >
@@ -76,7 +76,7 @@ export default function SimulationsScreen() {
                     <Text className="text-white text-lg font-bold">Run New Simulation</Text>
                     <Text className="text-white/80 text-sm">Analyze carbon reduction scenarios</Text>
                   </View>
-                  <Text className="text-white text-3xl">⚡</Text>
+                  <Ionicons name="flash" size={26} color="#fff" />
                 </TouchableOpacity>
               </Link>
 
@@ -99,9 +99,16 @@ export default function SimulationsScreen() {
                       style={{ borderWidth: 1, borderColor: colors.border }}
                     >
                       <View className="flex-row items-center mb-3">
-                        <Text style={{ fontSize: 32, marginRight: 12 }}>
-                          {getInterventionIcon(sim.interventionType)}
-                        </Text>
+                        <View
+                          className="w-11 h-11 rounded-full items-center justify-center mr-3"
+                          style={{ backgroundColor: colors.primary + "20" }}
+                        >
+                          <Ionicons
+                            name={interventionIcon[sim.interventionType] ?? "settings"}
+                            size={22}
+                            color={colors.primary}
+                          />
+                        </View>
                         <View className="flex-1">
                           <View className="flex-row items-center gap-2 mb-1">
                             <Text className="text-foreground text-lg font-bold capitalize">
