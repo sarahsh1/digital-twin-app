@@ -5,9 +5,12 @@ const { width } = Dimensions.get("window");
 import { router, useLocalSearchParams } from "expo-router";
 import Animated, { FadeInDown, FadeInUp } from "react-native-reanimated";
 import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { Badge } from "@/components/ui/badge";
+import { MetricCard } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
 import { getSimulationById, type FormattedSimulation } from "@/lib/simulations";
 
@@ -47,8 +50,9 @@ export default function SimulationResultsScreen() {
       <View className="flex-1">
         {/* Header */}
         <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
-          <TouchableOpacity onPress={() => router.back()} className="mb-2">
-            <Text className="text-primary text-base">← Back</Text>
+          <TouchableOpacity onPress={() => router.back()} className="flex-row items-center gap-1 mb-2">
+            <Ionicons name="arrow-back" size={16} color={colors.primary} />
+            <Text className="text-primary text-base">Back</Text>
           </TouchableOpacity>
           <View className="flex-row items-center gap-2">
             <Text className="text-foreground text-xl font-bold">Simulation Results</Text>
@@ -60,57 +64,60 @@ export default function SimulationResultsScreen() {
         <ScrollView className="flex-1" showsVerticalScrollIndicator={false}>
           {/* Success Banner */}
           <Animated.View entering={FadeInUp.duration(600)} className="mx-4 mt-4">
-            <View className="bg-success/20 rounded-2xl p-4 border-2" style={{ borderColor: colors.success }}>
-              <Text className="text-success text-center text-lg font-bold mb-1">✓ Simulation Complete</Text>
-              <Text className="text-success/80 text-center text-sm capitalize">
-                {interventionType.replace("-", " ")} Strategy Analysis
-              </Text>
+            <View
+              className="bg-success/20 rounded-2xl p-4 border-2 flex-row items-center justify-center gap-2"
+              style={{ borderColor: colors.success }}
+            >
+              <Ionicons name="checkmark-circle" size={20} color={colors.success} />
+              <View>
+                <Text className="text-success text-center text-lg font-bold">Simulation Complete</Text>
+                <Text className="text-success/80 text-center text-sm capitalize">
+                  {interventionType.replace("-", " ")} Strategy Analysis
+                </Text>
+              </View>
             </View>
           </Animated.View>
 
           {/* Key Metrics */}
           <Animated.View entering={FadeInDown.delay(200).duration(600)} className="px-4 mt-6">
-            <Text className="text-foreground text-lg font-bold mb-4">Key Results</Text>
-            
-            <View className="gap-3">
-              <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                <Text className="text-muted text-sm mb-1">Carbon Reduction</Text>
-                <Text className="text-success text-3xl font-bold">{(projected.reductionPercentage || projected.annualReduction / baseline.annualEmissions * 100 || 0).toFixed(1)}%</Text>
-                <Text className="text-muted text-sm mt-1">
-                  {projected.annualReduction.toFixed(1)} tons CO₂/year saved
-                </Text>
-              </View>
+            <SectionHeader className="mb-4">Key Results</SectionHeader>
 
-              <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                <Text className="text-muted text-sm mb-1">Implementation Cost</Text>
-                <Text className="text-primary text-3xl font-bold">${(financial.implementationCost / 1000).toFixed(0)}K</Text>
-                <Text className="text-muted text-sm mt-1">
-                  One-time investment required
-                </Text>
-              </View>
-
-              <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                <Text className="text-muted text-sm mb-1">Payback Period</Text>
-                <Text className="text-secondary text-3xl font-bold">{financial.paybackPeriod.toFixed(1)} years</Text>
-                <Text className="text-muted text-sm mt-1">
-                  ROI: {financial.roi.toFixed(1)}%
-                </Text>
-              </View>
-
-              <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
-                <Text className="text-muted text-sm mb-1">Annual Savings</Text>
-                <Text className="text-success text-3xl font-bold">${financial.annualSavings.toLocaleString()}</Text>
-                <Text className="text-muted text-sm mt-1">
-                  Energy cost reduction
-                </Text>
-              </View>
+            <View className="flex-row flex-wrap gap-3">
+              <MetricCard
+                label="Carbon Reduction"
+                value={`${(projected.reductionPercentage || (projected.annualReduction / baseline.annualEmissions) * 100 || 0).toFixed(1)}%`}
+                caption={`${projected.annualReduction.toFixed(1)} tons CO₂/year saved`}
+                tone="success"
+                width={(width - 40) / 2}
+              />
+              <MetricCard
+                label="Implementation Cost"
+                value={`$${(financial.implementationCost / 1000).toFixed(0)}K`}
+                caption="One-time investment"
+                tone="primary"
+                width={(width - 40) / 2}
+              />
+              <MetricCard
+                label="Payback Period"
+                value={`${financial.paybackPeriod.toFixed(1)} yrs`}
+                caption={`ROI: ${financial.roi.toFixed(1)}%`}
+                tone="secondary"
+                width={(width - 40) / 2}
+              />
+              <MetricCard
+                label="Annual Savings"
+                value={`$${financial.annualSavings.toLocaleString()}`}
+                caption="Energy cost reduction"
+                tone="success"
+                width={(width - 40) / 2}
+              />
             </View>
           </Animated.View>
 
           {/* Baseline vs Projected */}
           <Animated.View entering={FadeInDown.delay(400).duration(600)} className="px-4 mt-6">
-            <Text className="text-foreground text-lg font-bold mb-4">Before & After Comparison</Text>
-            
+            <SectionHeader className="mb-4">Before & After Comparison</SectionHeader>
+
             <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
               <View className="flex-row justify-between mb-4">
                 <View className="flex-1">
@@ -119,7 +126,7 @@ export default function SimulationResultsScreen() {
                   <Text className="text-muted text-xs">CO₂/year</Text>
                 </View>
                 <View className="items-center justify-center px-4">
-                  <Text className="text-primary text-2xl">→</Text>
+                  <Ionicons name="arrow-forward" size={22} color={colors.primary} />
                 </View>
                 <View className="flex-1 items-end">
                   <Text className="text-muted text-xs mb-1">PROJECTED</Text>
@@ -140,8 +147,8 @@ export default function SimulationResultsScreen() {
 
           {/* Financial Analysis */}
           <Animated.View entering={FadeInDown.delay(600).duration(600)} className="px-4 mt-6">
-            <Text className="text-foreground text-lg font-bold mb-4">Financial Analysis</Text>
-            
+            <SectionHeader className="mb-4">Financial Analysis</SectionHeader>
+
             <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
               <View className="flex-row justify-between mb-3">
                 <Text className="text-muted">Initial Investment</Text>
@@ -168,8 +175,8 @@ export default function SimulationResultsScreen() {
 
           {/* Confidence Level */}
           <Animated.View entering={FadeInDown.delay(800).duration(600)} className="px-4 mt-6 mb-6">
-            <Text className="text-foreground text-lg font-bold mb-4">AI Confidence</Text>
-            
+            <SectionHeader className="mb-4">AI Confidence</SectionHeader>
+
             <View className="bg-surface rounded-2xl p-4" style={{ borderWidth: 1, borderColor: colors.border }}>
               <View className="flex-row items-center justify-between mb-2">
                 <Text className="text-foreground font-semibold capitalize">{confidence.level} Confidence</Text>
@@ -189,7 +196,8 @@ export default function SimulationResultsScreen() {
             className="rounded-xl p-4 items-center flex-row justify-center gap-2"
             style={{ borderWidth: 1, borderColor: colors.border, opacity: 0.6 }}
           >
-            <Text className="text-muted font-semibold">📄 Export PDF Report</Text>
+            <Ionicons name="document-text-outline" size={18} color={colors.muted} />
+            <Text className="text-muted font-semibold">Export PDF Report</Text>
             <Badge label="Coming soon" tone="neutral" />
           </View>
 
