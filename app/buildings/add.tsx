@@ -5,6 +5,7 @@ import * as ImagePicker from "expo-image-picker";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
@@ -21,11 +22,11 @@ export default function AddBuildingScreen() {
   const [floors, setFloors] = useState("");
   const [image, setImage] = useState<string | null>(null);
 
-  const buildingTypes: { type: BuildingType; label: string; icon: string; imagePath: any }[] = [
-    { type: "office", label: "Office Building", icon: "🏢", imagePath: require("@/assets/images/building-types-office.png") },
-    { type: "residential", label: "Residential", icon: "🏘️", imagePath: require("@/assets/images/building-types-residential.png") },
-    { type: "industrial", label: "Industrial", icon: "🏭", imagePath: require("@/assets/images/building-types-industrial.png") },
-    { type: "retail", label: "Retail/Commercial", icon: "🏬", imagePath: null },
+  const buildingTypes: { type: BuildingType; label: string; icon: keyof typeof Ionicons.glyphMap; imagePath: any }[] = [
+    { type: "office", label: "Office Building", icon: "business", imagePath: require("@/assets/images/building-types-office.png") },
+    { type: "residential", label: "Residential", icon: "home", imagePath: require("@/assets/images/building-types-residential.png") },
+    { type: "industrial", label: "Industrial", icon: "cog", imagePath: require("@/assets/images/building-types-industrial.png") },
+    { type: "retail", label: "Retail/Commercial", icon: "storefront", imagePath: null },
   ];
 
   const pickImage = async () => {
@@ -116,8 +117,9 @@ export default function AddBuildingScreen() {
         {/* Header */}
         <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
           <View className="flex-row items-center justify-between">
-            <TouchableOpacity onPress={handleBack} className="py-2">
-              <Text className="text-primary text-base">← Back</Text>
+            <TouchableOpacity onPress={handleBack} className="py-2 flex-row items-center gap-1">
+              <Ionicons name="arrow-back" size={16} color={colors.primary} />
+              <Text className="text-primary text-base">Back</Text>
             </TouchableOpacity>
             <Text className="text-foreground text-lg font-bold">Add Building</Text>
             <View style={{ width: 60 }} />
@@ -160,7 +162,9 @@ export default function AddBuildingScreen() {
                     {item.imagePath ? (
                       <Image source={item.imagePath} style={{ width: 60, height: 60, marginRight: 16 }} resizeMode="contain" />
                     ) : (
-                      <Text style={{ fontSize: 40, marginRight: 16 }}>{item.icon}</Text>
+                      <View style={{ width: 60, height: 60, marginRight: 16, alignItems: "center", justifyContent: "center" }}>
+                        <Ionicons name={item.icon} size={36} color={colors.primary} />
+                      </View>
                     )}
                     <Text className="text-foreground text-lg font-semibold">{item.label}</Text>
                   </TouchableOpacity>
@@ -242,7 +246,7 @@ export default function AddBuildingScreen() {
                     onPress={() => setImage(null)}
                     className="absolute top-2 right-2 bg-error rounded-full w-8 h-8 items-center justify-center"
                   >
-                    <Text className="text-white font-bold">×</Text>
+                    <Ionicons name="close" size={18} color="#fff" />
                   </TouchableOpacity>
                 </View>
               ) : (
@@ -254,17 +258,19 @@ export default function AddBuildingScreen() {
               <View className="gap-3">
                 <TouchableOpacity
                   onPress={pickImage}
-                  className="bg-primary rounded-xl p-4 items-center"
+                  className="bg-primary rounded-xl p-4 items-center flex-row justify-center gap-2"
                 >
-                  <Text className="text-white font-semibold">📁 Choose from Gallery</Text>
+                  <Ionicons name="image-outline" size={18} color="#fff" />
+                  <Text className="text-white font-semibold">Choose from Gallery</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity
                   onPress={takePhoto}
-                  className="bg-surface rounded-xl p-4 items-center"
+                  className="bg-surface rounded-xl p-4 items-center flex-row justify-center gap-2"
                   style={{ borderWidth: 1, borderColor: colors.border }}
                 >
-                  <Text className="text-foreground font-semibold">📷 Take Photo</Text>
+                  <Ionicons name="camera-outline" size={18} color={colors.foreground} />
+                  <Text className="text-foreground font-semibold">Take Photo</Text>
                 </TouchableOpacity>
 
                 <TouchableOpacity

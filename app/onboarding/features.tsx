@@ -1,29 +1,30 @@
 import { useState, useRef } from "react";
 import { View, Text, TouchableOpacity, ScrollView, Dimensions } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { ScreenContainer } from "@/components/screen-container";
 import { useColors } from "@/hooks/use-colors";
 
 const { width } = Dimensions.get("window");
 
-const features = [
+const features: { icon: keyof typeof Ionicons.glyphMap; title: string; description: string }[] = [
   {
-    icon: "🏗️",
+    icon: "cube-outline",
     title: "Digital Twin Creation",
     description: "Upload building sketches or design from scratch. Our AI converts them into accurate 3D digital twins with all systems mapped.",
   },
   {
-    icon: "⚗️",
+    icon: "flask-outline",
     title: "Simulation Engine",
     description: "Test sustainability scenarios before investment. Solar panels, wind turbines, HVAC optimization, and more.",
   },
   {
-    icon: "🧠",
+    icon: "hardware-chip-outline",
     title: "AI Forecasting",
     description: "Predictive analytics for carbon reduction, energy savings, and ROI. Make data-driven decisions with confidence.",
   },
   {
-    icon: "🔗",
+    icon: "link-outline",
     title: "Blockchain Tracking",
     description: "Transparent supply chain emissions with immutable blockchain verification. Solve Scope 3 reporting challenges.",
   },
@@ -73,7 +74,12 @@ export default function FeaturesScreen() {
               className="flex-1 items-center justify-center px-8"
             >
               <View className="items-center">
-                <Text className="text-8xl mb-8">{feature.icon}</Text>
+                <View
+                  className="w-28 h-28 rounded-full items-center justify-center mb-8"
+                  style={{ backgroundColor: colors.primary + "20" }}
+                >
+                  <Ionicons name={feature.icon} size={56} color={colors.primary} />
+                </View>
                 <Text className="text-3xl font-bold text-foreground text-center mb-4">
                   {feature.title}
                 </Text>

@@ -4,6 +4,7 @@ import { router } from "expo-router";
 import * as Haptics from "expo-haptics";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
 import { Badge } from "@/components/ui/badge";
@@ -50,41 +51,47 @@ export default function NewSimulationScreen() {
     }
   };
 
-  const interventionTypes = [
-    { 
-      type: "solar" as InterventionType, 
-      label: "Solar Panels", 
+  const interventionTypes: {
+    type: InterventionType;
+    label: string;
+    description: string;
+    imagePath: any;
+    icon: keyof typeof Ionicons.glyphMap;
+  }[] = [
+    {
+      type: "solar",
+      label: "Solar Panels",
       description: "Rooftop photovoltaic installation",
       imagePath: require("@/assets/images/intervention-solar.png"),
-      icon: "☀️"
+      icon: "sunny",
     },
-    { 
-      type: "hvac" as InterventionType, 
-      label: "HVAC Optimization", 
+    {
+      type: "hvac",
+      label: "HVAC Optimization",
       description: "High-efficiency climate control",
       imagePath: require("@/assets/images/intervention-hvac.png"),
-      icon: "❄️"
+      icon: "snow",
     },
-    { 
-      type: "wind" as InterventionType, 
-      label: "Wind Turbines", 
+    {
+      type: "wind",
+      label: "Wind Turbines",
       description: "On-site wind energy generation",
       imagePath: require("@/assets/images/intervention-wind.png"),
-      icon: "💨"
+      icon: "cloudy",
     },
-    { 
-      type: "envelope" as InterventionType, 
-      label: "Building Envelope", 
+    {
+      type: "envelope",
+      label: "Building Envelope",
       description: "Insulation and window upgrades",
       imagePath: null,
-      icon: "🏗️"
+      icon: "construct",
     },
-    { 
-      type: "combined" as InterventionType, 
-      label: "Combined Strategy", 
+    {
+      type: "combined",
+      label: "Combined Strategy",
       description: "Multiple interventions together",
       imagePath: null,
-      icon: "⚡"
+      icon: "flash",
     },
   ];
 
@@ -163,8 +170,9 @@ export default function NewSimulationScreen() {
         {/* Header */}
         <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
           <View className="flex-row items-center justify-between">
-            <TouchableOpacity onPress={handleBack} className="py-2">
-              <Text className="text-primary text-base">← Back</Text>
+            <TouchableOpacity onPress={handleBack} className="py-2 flex-row items-center gap-1">
+              <Ionicons name="arrow-back" size={16} color={colors.primary} />
+              <Text className="text-primary text-base">Back</Text>
             </TouchableOpacity>
             <Text className="text-foreground text-lg font-bold">New Simulation</Text>
             <View style={{ width: 60 }} />
@@ -257,7 +265,9 @@ export default function NewSimulationScreen() {
                     {item.imagePath ? (
                       <Image source={item.imagePath} style={{ width: 60, height: 60, marginRight: 16 }} resizeMode="contain" />
                     ) : (
-                      <Text style={{ fontSize: 40, marginRight: 16 }}>{item.icon}</Text>
+                      <View style={{ width: 60, height: 60, marginRight: 16, alignItems: "center", justifyContent: "center" }}>
+                        <Ionicons name={item.icon} size={36} color={colors.primary} />
+                      </View>
                     )}
                     <View className="flex-1">
                       <Text className="text-foreground text-lg font-bold">{item.label}</Text>
