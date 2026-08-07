@@ -142,7 +142,7 @@ export default function ProfileScreen() {
 
             <TouchableOpacity
               className="bg-primary/10 border border-primary rounded-xl py-3 items-center mt-4 active:opacity-70"
-              onPress={() => router.push("/onboarding/setup")}
+              onPress={() => router.push({ pathname: "/onboarding/setup", params: { mode: "edit" } } as any)}
             >
               <Text className="text-primary font-semibold">Edit Profile</Text>
             </TouchableOpacity>
