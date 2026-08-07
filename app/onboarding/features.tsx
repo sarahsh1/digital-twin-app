@@ -1,5 +1,5 @@
 import { useState, useRef } from "react";
-import { View, Text, TouchableOpacity, ScrollView, Dimensions } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, useWindowDimensions } from "react-native";
 import { router } from "expo-router";
 import { Ionicons } from "@expo/vector-icons";
 import { LinearGradient } from "expo-linear-gradient";
@@ -8,7 +8,11 @@ import { GlowBackdrop } from "@/components/ui/glow-backdrop";
 import { GlowIcon } from "@/components/ui/glow-icon";
 import { useColors } from "@/hooks/use-colors";
 
-const { width } = Dimensions.get("window");
+// Caps the carousel/content column at a phone-like width and centers it --
+// on an actual phone this is a no-op (window width stays under the cap),
+// on a wide web/desktop viewport it keeps onboarding from stretching into
+// a broken full-bleed layout.
+const MAX_CONTENT_WIDTH = 480;
 
 const features: { icon: keyof typeof Ionicons.glyphMap; title: string; description: string }[] = [
   {
@@ -35,6 +39,8 @@ const features: { icon: keyof typeof Ionicons.glyphMap; title: string; descripti
 
 export default function FeaturesScreen() {
   const colors = useColors();
+  const { width: windowWidth } = useWindowDimensions();
+  const width = Math.min(windowWidth, MAX_CONTENT_WIDTH);
   const [currentIndex, setCurrentIndex] = useState(0);
   const scrollViewRef = useRef<ScrollView>(null);
   const isLast = currentIndex === features.length - 1;
@@ -69,7 +75,7 @@ export default function FeaturesScreen() {
   return (
     <ScreenContainer edges={["top", "bottom", "left", "right"]} containerClassName="bg-[#05100D]">
       <GlowBackdrop>
-        <View className="flex-1">
+        <View className="flex-1 self-center" style={{ width: "100%", maxWidth: MAX_CONTENT_WIDTH }}>
           {/* Carousel */}
           <View className="flex-1 justify-center">
             <ScrollView

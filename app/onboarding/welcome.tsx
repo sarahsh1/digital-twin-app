@@ -13,7 +13,10 @@ export default function WelcomeScreen() {
   return (
     <ScreenContainer edges={["top", "bottom", "left", "right"]} containerClassName="bg-[#05100D]">
       <GlowBackdrop>
-        <View className="flex-1 items-center justify-center px-6">
+        <View
+          className="flex-1 items-center justify-center px-6 self-center"
+          style={{ width: "100%", maxWidth: 480 }}
+        >
           <Animated.View entering={FadeInUp.duration(700)} className="items-center">
             <DigitalTwinGlyph size={240} />
 

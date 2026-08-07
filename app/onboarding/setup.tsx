@@ -227,7 +227,11 @@ export default function SetupScreen() {
 
   return (
     <ScreenContainer edges={["top", "left", "right"]} containerClassName="bg-[#05100D]">
-      <GlowBackdrop>{formContent}</GlowBackdrop>
+      <GlowBackdrop>
+        <View className="flex-1 self-center" style={{ width: "100%", maxWidth: 480 }}>
+          {formContent}
+        </View>
+      </GlowBackdrop>
     </ScreenContainer>
   );
 }
