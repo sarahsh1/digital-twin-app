@@ -65,13 +65,13 @@ export default function SimulationResultsScreen() {
           {/* Success Banner */}
           <Animated.View entering={FadeInUp.duration(600)} className="mx-4 mt-4">
             <View
-              className="bg-success/20 rounded-2xl p-4 border-2 flex-row items-center justify-center gap-2"
-              style={{ borderColor: colors.success }}
+              className="rounded-2xl p-4 border-2 flex-row items-center justify-center gap-2"
+              style={{ borderColor: colors.success, backgroundColor: colors.success + "33" }}
             >
               <Ionicons name="checkmark-circle" size={20} color={colors.success} />
               <View>
                 <Text className="text-success text-center text-lg font-bold">Simulation Complete</Text>
-                <Text className="text-success/80 text-center text-sm capitalize">
+                <Text className="text-success text-center text-sm capitalize">
                   {interventionType.replace("-", " ")} Strategy Analysis
                 </Text>
               </View>

@@ -118,7 +118,7 @@ export default function SimulationsScreen() {
                           </View>
                           <Text className="text-muted text-sm">{sim.buildingName}</Text>
                         </View>
-                        <View className="bg-success/20 px-3 py-1 rounded-full">
+                        <View className="px-3 py-1 rounded-full" style={{ backgroundColor: colors.success + "33" }}>
                           <Text className="text-success font-bold text-sm">
                             -{sim.results?.projected?.reductionPercentage?.toFixed(0) || 0}%
                           </Text>

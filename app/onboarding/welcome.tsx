@@ -26,7 +26,7 @@ export default function WelcomeScreen() {
             >
               EcoTwin
             </Text>
-            <Text className="text-foreground/70 text-lg text-center mt-3 max-w-xs" style={{ lineHeight: 26 }}>
+            <Text className="text-muted text-lg text-center mt-3 max-w-xs" style={{ lineHeight: 26 }}>
               Proactive carbon reduction through AI-powered building optimization
             </Text>
 
@@ -64,7 +64,7 @@ export default function WelcomeScreen() {
               className="py-3 items-center active:opacity-60"
               onPress={() => router.replace("/(tabs)")}
             >
-              <Text className="text-foreground/60 text-base font-medium">Skip for now</Text>
+              <Text className="text-muted text-base font-medium">Skip for now</Text>
             </TouchableOpacity>
           </Animated.View>
         </View>

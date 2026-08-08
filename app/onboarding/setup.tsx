@@ -117,7 +117,7 @@ export default function SetupScreen() {
         >
           {isEditing ? "Edit Your Profile" : "Create Your Profile"}
         </Text>
-        <Text className={isEditing ? "text-base text-muted" : "text-base text-foreground/70"}>
+        <Text className="text-base text-muted">
           {isEditing
             ? "Update your organization's details"
             : "Tell us about your organization to personalize your experience"}
@@ -215,7 +215,7 @@ export default function SetupScreen() {
           className="py-4 items-center active:opacity-60"
           onPress={() => router.replace("/(tabs)")}
         >
-          <Text className="text-foreground/60 text-base font-medium">Skip for now</Text>
+          <Text className="text-muted text-base font-medium">Skip for now</Text>
         </TouchableOpacity>
       )}
     </ScrollView>

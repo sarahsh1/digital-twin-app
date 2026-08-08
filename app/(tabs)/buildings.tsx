@@ -212,8 +212,8 @@ export default function BuildingsScreen() {
                               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                               router.push("/simulations/new");
                             }}
-                            className="flex-1 bg-secondary/20 rounded-xl py-3 items-center"
-                            style={{ borderWidth: 1, borderColor: colors.primary }}
+                            className="flex-1 rounded-xl py-3 items-center"
+                            style={{ borderWidth: 1, borderColor: colors.primary, backgroundColor: colors.secondary + "33" }}
                           >
                             <Text className="font-semibold" style={{ color: colors.primary }}>Simulate</Text>
                           </TouchableOpacity>
@@ -223,8 +223,8 @@ export default function BuildingsScreen() {
                               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                               deleteBuilding(building.id);
                             }}
-                            className="bg-error/20 rounded-xl px-4 py-3 items-center justify-center"
-                            style={{ borderWidth: 1, borderColor: colors.error }}
+                            className="rounded-xl px-4 py-3 items-center justify-center"
+                            style={{ borderWidth: 1, borderColor: colors.error, backgroundColor: colors.error + "33" }}
                           >
                             <Ionicons name="trash" size={18} color={colors.error} />
                           </TouchableOpacity>

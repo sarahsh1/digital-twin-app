@@ -116,7 +116,10 @@ export default function ProfileScreen() {
         <View className="px-6 mb-6">
           <View className="bg-surface rounded-2xl p-6">
             <View className="items-center mb-4">
-              <View className="w-20 h-20 bg-primary/20 rounded-full items-center justify-center mb-3">
+              <View
+                className="w-20 h-20 rounded-full items-center justify-center mb-3"
+                style={{ backgroundColor: colors.primary + "33" }}
+              >
                 <Ionicons name="business" size={36} color={colors.primary} />
               </View>
               <Text className="text-2xl font-bold text-foreground mb-1">
@@ -141,7 +144,8 @@ export default function ProfileScreen() {
             </View>
 
             <TouchableOpacity
-              className="bg-primary/10 border border-primary rounded-xl py-3 items-center mt-4 active:opacity-70"
+              className="border border-primary rounded-xl py-3 items-center mt-4 active:opacity-70"
+              style={{ backgroundColor: colors.primary + "1A" }}
               onPress={() => router.push({ pathname: "/onboarding/setup", params: { mode: "edit" } } as any)}
             >
               <Text className="text-primary font-semibold">Edit Profile</Text>
@@ -179,7 +183,7 @@ export default function ProfileScreen() {
                 <Text className="text-base font-semibold text-foreground mb-1">Free Plan</Text>
                 <Text className="text-sm text-muted">Limited features</Text>
               </View>
-              <View className="bg-primary/20 px-3 py-1 rounded-full">
+              <View className="px-3 py-1 rounded-full" style={{ backgroundColor: colors.primary + "33" }}>
                 <Text className="text-xs font-medium text-primary">Active</Text>
               </View>
             </View>
@@ -229,7 +233,8 @@ export default function ProfileScreen() {
         {/* Sign Out */}
         <View className="px-6">
           <TouchableOpacity
-            className="bg-error/10 border border-error rounded-xl py-4 items-center flex-row justify-center gap-2 active:opacity-70"
+            className="border border-error rounded-xl py-4 items-center flex-row justify-center gap-2 active:opacity-70"
+            style={{ backgroundColor: colors.error + "1A" }}
             onPress={handleSignOut}
           >
             <Ionicons name="log-out-outline" size={18} color={colors.error} />

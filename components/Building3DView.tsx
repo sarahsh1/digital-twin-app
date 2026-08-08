@@ -31,18 +31,18 @@ export function Building3DView({ buildingId, showSolarSimulation = false, model3
         {/* View Mode Toggle */}
         <View className="absolute bottom-4 left-4 right-4 flex-row gap-2">
           <TouchableOpacity
-            className={`flex-1 py-3 rounded-xl ${viewMode === "wireframe" ? "bg-primary" : "bg-surface/80"}`}
+            className="flex-1 py-3 rounded-xl"
             onPress={() => setViewMode("wireframe")}
-            style={{ opacity: 0.95 }}
+            style={{ opacity: 0.95, backgroundColor: viewMode === "wireframe" ? colors.primary : colors.surface + "CC" }}
           >
             <Text className={`text-center font-semibold ${viewMode === "wireframe" ? "text-background" : "text-foreground"}`}>
               Rendering
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`flex-1 py-3 rounded-xl ${viewMode === "solar" ? "bg-primary" : "bg-surface/80"}`}
+            className="flex-1 py-3 rounded-xl"
             onPress={() => setViewMode("solar")}
-            style={{ opacity: 0.95 }}
+            style={{ opacity: 0.95, backgroundColor: viewMode === "solar" ? colors.primary : colors.surface + "CC" }}
           >
             <Text className={`text-center font-semibold ${viewMode === "solar" ? "text-background" : "text-foreground"}`}>
               Solar Overlay

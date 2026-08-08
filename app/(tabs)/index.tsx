@@ -212,7 +212,10 @@ export default function HomeScreen() {
           <View className="gap-4">
             <Card>
               <View className="flex-row items-center mb-2">
-                <View className="bg-primary/20 w-10 h-10 rounded-full items-center justify-center mr-3">
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{ backgroundColor: colors.primary + "33" }}
+                >
                   <Ionicons name="business" size={20} color={colors.primary} />
                 </View>
                 <Text className="text-foreground font-bold text-base flex-1">
@@ -227,7 +230,10 @@ export default function HomeScreen() {
 
             <Card>
               <View className="flex-row items-center mb-2">
-                <View className="bg-secondary/20 w-10 h-10 rounded-full items-center justify-center mr-3">
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{ backgroundColor: colors.secondary + "33" }}
+                >
                   <Ionicons name="hardware-chip" size={20} color={colors.secondary} />
                 </View>
                 <Text className="text-foreground font-bold text-base flex-1">
@@ -242,7 +248,10 @@ export default function HomeScreen() {
 
             <Card>
               <View className="flex-row items-center mb-2">
-                <View className="bg-success/20 w-10 h-10 rounded-full items-center justify-center mr-3">
+                <View
+                  className="w-10 h-10 rounded-full items-center justify-center mr-3"
+                  style={{ backgroundColor: colors.success + "33" }}
+                >
                   <Ionicons name="link" size={20} color={colors.success} />
                 </View>
                 <Text className="text-foreground font-bold text-base flex-1">
@@ -278,7 +287,10 @@ export default function HomeScreen() {
 
           <Card className="p-5">
             <View className="flex-row items-start mb-3">
-              <View className="bg-primary/20 w-8 h-8 rounded-full items-center justify-center mr-3 mt-1">
+              <View
+                className="w-8 h-8 rounded-full items-center justify-center mr-3 mt-1"
+                style={{ backgroundColor: colors.primary + "33" }}
+              >
                 <Ionicons name="bulb" size={16} color={colors.primary} />
               </View>
               <View className="flex-1">

@@ -157,7 +157,7 @@ export default function BlockchainScreen() {
             {transaction.isDemo && <Badge label="Sample" tone="sample" />}
           </View>
           <View className="flex-row items-center">
-            <View className="bg-secondary/20 px-3 py-1.5 rounded-full">
+            <View className="px-3 py-1.5 rounded-full" style={{ backgroundColor: colors.secondary + "33" }}>
               <Text className="text-sm font-medium text-secondary">{transaction.transactionType}</Text>
             </View>
           </View>

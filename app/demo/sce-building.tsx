@@ -250,7 +250,10 @@ export default function SCEBuildingDemoScreen() {
         {/* AI Recommendations */}
         <View className="px-6">
           <SectionHeader className="mb-3">AI Recommendations</SectionHeader>
-          <View className="bg-secondary/10 border-l-4 border-secondary rounded-lg p-4">
+          <View
+            className="border-l-4 border-secondary rounded-lg p-4"
+            style={{ backgroundColor: colors.secondary + "1A" }}
+          >
             <View className="flex-row items-start">
               <Ionicons name="bulb" size={22} color={colors.secondary} style={{ marginRight: 12, marginTop: 2 }} />
               <View className="flex-1">

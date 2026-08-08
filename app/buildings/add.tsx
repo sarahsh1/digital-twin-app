@@ -275,7 +275,8 @@ export default function AddBuildingScreen() {
 
                 <TouchableOpacity
                   onPress={handleNext}
-                  className="bg-muted/20 rounded-xl p-4 items-center"
+                  className="rounded-xl p-4 items-center"
+                  style={{ backgroundColor: colors.muted + "33" }}
                 >
                   <Text className="text-muted font-semibold">Skip for Now</Text>
                 </TouchableOpacity>

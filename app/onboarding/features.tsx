@@ -97,7 +97,7 @@ export default function FeaturesScreen() {
                       {feature.title}
                     </Text>
                     <Text
-                      className="text-foreground/70 text-base text-center max-w-xs"
+                      className="text-muted text-base text-center max-w-xs"
                       style={{ lineHeight: 24 }}
                     >
                       {feature.description}
@@ -167,7 +167,7 @@ export default function FeaturesScreen() {
 
             {!isLast && (
               <TouchableOpacity className="py-3 items-center active:opacity-60" onPress={handleSkip}>
-                <Text className="text-foreground/60 text-base font-medium">Skip</Text>
+                <Text className="text-muted text-base font-medium">Skip</Text>
               </TouchableOpacity>
             )}
           </View>
