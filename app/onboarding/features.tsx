@@ -89,7 +89,7 @@ export default function FeaturesScreen() {
               {features.map((feature, index) => (
                 <View key={index} style={{ width }} className="items-center justify-center px-10">
                   <View className="items-center">
-                    <GlowIcon icon={feature.icon} />
+                    <GlowIcon icon={feature.icon} size={96} iconSize={44} />
                     <Text
                       className="text-foreground text-3xl font-bold text-center mt-8 mb-4"
                       style={{ letterSpacing: -0.5 }}
@@ -147,7 +147,7 @@ export default function FeaturesScreen() {
             <TouchableOpacity
               onPress={handleNext}
               style={{
-                borderRadius: 16,
+                borderRadius: 28,
                 shadowColor: colors.primary,
                 shadowOffset: { width: 0, height: 8 },
                 shadowOpacity: 0.45,
@@ -159,7 +159,7 @@ export default function FeaturesScreen() {
                 colors={[colors.primary, colors.secondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
+                style={{ borderRadius: 28, paddingVertical: 17, alignItems: "center" }}
               >
                 <Text className="text-white text-lg font-bold">{isLast ? "Get Started" : "Next"}</Text>
               </LinearGradient>

@@ -89,7 +89,7 @@ export default function SetupScreen() {
     <TouchableOpacity
       onPress={handleComplete}
       style={{
-        borderRadius: 16,
+        borderRadius: 28,
         shadowColor: colors.primary,
         shadowOffset: { width: 0, height: 8 },
         shadowOpacity: 0.45,
@@ -101,7 +101,7 @@ export default function SetupScreen() {
         colors={[colors.primary, colors.secondary]}
         start={{ x: 0, y: 0 }}
         end={{ x: 1, y: 1 }}
-        style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
+        style={{ borderRadius: 28, paddingVertical: 17, alignItems: "center" }}
       >
         <Text className="text-white text-lg font-semibold">Complete Setup</Text>
       </LinearGradient>
@@ -130,7 +130,7 @@ export default function SetupScreen() {
           Company Name *
         </Text>
         <TextInput
-          className="bg-surface text-foreground px-4 py-3 rounded-lg border border-border"
+          className="bg-surface text-foreground px-4 py-3 rounded-xl border border-border"
           placeholder="Enter company name"
           placeholderTextColor={colors.muted}
           value={companyName}
@@ -145,7 +145,7 @@ export default function SetupScreen() {
           Industry Sector *
         </Text>
         <TouchableOpacity
-          className="bg-surface px-4 py-3 rounded-lg border border-border"
+          className="bg-surface px-4 py-3 rounded-xl border border-border"
           onPress={() => setShowIndustryPicker(!showIndustryPicker)}
         >
           <Text className={industry ? "text-foreground" : "text-muted"}>
@@ -154,7 +154,7 @@ export default function SetupScreen() {
         </TouchableOpacity>
 
         {showIndustryPicker && (
-          <View className="mt-2 bg-surface rounded-lg border border-border overflow-hidden">
+          <View className="mt-2 bg-surface rounded-xl border border-border overflow-hidden">
             {industries.map((item) => (
               <TouchableOpacity
                 key={item}
@@ -179,7 +179,7 @@ export default function SetupScreen() {
           Number of Buildings (Optional)
         </Text>
         <TextInput
-          className="bg-surface text-foreground px-4 py-3 rounded-lg border border-border"
+          className="bg-surface text-foreground px-4 py-3 rounded-xl border border-border"
           placeholder="0"
           placeholderTextColor={colors.muted}
           value={buildingCount}
@@ -195,7 +195,7 @@ export default function SetupScreen() {
           Sustainability Goals (Optional)
         </Text>
         <TextInput
-          className="bg-surface text-foreground px-4 py-3 rounded-lg border border-border"
+          className="bg-surface text-foreground px-4 py-3 rounded-xl border border-border"
           placeholder="e.g., Achieve net-zero by 2030, reduce emissions by 50%"
           placeholderTextColor={colors.muted}
           value={goals}

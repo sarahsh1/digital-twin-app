@@ -18,11 +18,11 @@ export default function WelcomeScreen() {
           style={{ width: "100%", maxWidth: 480 }}
         >
           <Animated.View entering={FadeInUp.duration(700)} className="items-center">
-            <DigitalTwinGlyph size={240} />
+            <DigitalTwinGlyph size={120} />
 
             <Text
-              className="text-foreground text-6xl font-bold text-center mt-8"
-              style={{ letterSpacing: -1.5, lineHeight: 60 }}
+              className="text-foreground text-6xl font-bold text-center mt-6"
+              style={{ letterSpacing: -0.5, lineHeight: 60 }}
             >
               EcoTwin
             </Text>
@@ -42,7 +42,7 @@ export default function WelcomeScreen() {
             <TouchableOpacity
               onPress={() => router.push("/onboarding/features")}
               style={{
-                borderRadius: 16,
+                borderRadius: 28,
                 shadowColor: colors.primary,
                 shadowOffset: { width: 0, height: 8 },
                 shadowOpacity: 0.45,
@@ -54,7 +54,7 @@ export default function WelcomeScreen() {
                 colors={[colors.primary, colors.secondary]}
                 start={{ x: 0, y: 0 }}
                 end={{ x: 1, y: 1 }}
-                style={{ borderRadius: 16, paddingVertical: 16, alignItems: "center" }}
+                style={{ borderRadius: 28, paddingVertical: 17, alignItems: "center" }}
               >
                 <Text className="text-white text-lg font-bold">Get Started</Text>
               </LinearGradient>

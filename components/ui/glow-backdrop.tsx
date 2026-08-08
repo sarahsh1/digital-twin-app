@@ -25,7 +25,7 @@ export function GlowBackdrop({ children, style, ...props }: ViewProps) {
           height: 340,
           borderRadius: 170,
           backgroundColor: colors.primary,
-          opacity: 0.16,
+          opacity: 0.1,
         }}
       />
       <View
@@ -38,7 +38,7 @@ export function GlowBackdrop({ children, style, ...props }: ViewProps) {
           height: 380,
           borderRadius: 190,
           backgroundColor: colors.secondary,
-          opacity: 0.12,
+          opacity: 0.07,
         }}
       />
       {children}
