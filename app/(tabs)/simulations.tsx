@@ -44,7 +44,11 @@ export default function SimulationsScreen() {
 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {simulations.length === 0 ? (
-            <Animated.View entering={FadeInDown.duration(400)} className="items-center justify-center py-16">
+            <Animated.View
+              entering={FadeInDown.duration(400)}
+              className="py-16"
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
               <Image
                 source={require("@/assets/images/simulation-success.png")}
                 style={{ width: 200, height: 200, marginBottom: 16 }}

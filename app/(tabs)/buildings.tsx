@@ -106,7 +106,11 @@ export default function BuildingsScreen() {
 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {buildings.length === 0 ? (
-            <Animated.View entering={FadeInDown.duration(400)} className="items-center justify-center py-16">
+            <Animated.View
+              entering={FadeInDown.duration(400)}
+              className="py-16"
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
               <Image
                 source={require("@/assets/images/empty-buildings.png")}
                 style={{ width: 200, height: 200, marginBottom: 16 }}

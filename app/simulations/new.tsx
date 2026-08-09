@@ -403,7 +403,7 @@ export default function NewSimulationScreen() {
 
           {/* Step 5: Running Simulation */}
           {step === 5 && (
-            <Animated.View entering={FadeInDown.duration(400)} className="p-4 items-center">
+            <Animated.View entering={FadeInDown.duration(400)} className="p-4" style={{ alignItems: "center" }}>
               <Image
                 source={require("@/assets/images/simulation-success.png")}
                 style={{ width: 200, height: 200, marginBottom: 24 }}

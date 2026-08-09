@@ -85,9 +85,11 @@ export default function FeaturesScreen() {
               showsHorizontalScrollIndicator={false}
               onScroll={handleScroll}
               scrollEventThrottle={16}
+              style={{ flex: 1 }}
+              contentContainerStyle={{ flexGrow: 1 }}
             >
               {features.map((feature, index) => (
-                <View key={index} style={{ width }} className="items-center justify-center px-10">
+                <View key={index} style={{ width, height: "100%" }} className="items-center justify-center px-10">
                   <View className="items-center">
                     <GlowIcon icon={feature.icon} size={96} iconSize={44} />
                     <Text
@@ -112,7 +114,7 @@ export default function FeaturesScreen() {
               <TouchableOpacity
                 onPress={handlePrev}
                 className="absolute left-3 w-10 h-10 rounded-full items-center justify-center"
-                style={{ backgroundColor: "rgba(255,255,255,0.08)", top: "50%", marginTop: -20 }}
+                style={{ backgroundColor: "rgba(255,255,255,0.08)", top: "50%", marginTop: -105 }}
               >
                 <Ionicons name="chevron-back" size={20} color={colors.foreground} />
               </TouchableOpacity>
@@ -121,7 +123,7 @@ export default function FeaturesScreen() {
               <TouchableOpacity
                 onPress={() => goToSlide(currentIndex + 1)}
                 className="absolute right-3 w-10 h-10 rounded-full items-center justify-center"
-                style={{ backgroundColor: "rgba(255,255,255,0.08)", top: "50%", marginTop: -20 }}
+                style={{ backgroundColor: "rgba(255,255,255,0.08)", top: "50%", marginTop: -105 }}
               >
                 <Ionicons name="chevron-forward" size={20} color={colors.foreground} />
               </TouchableOpacity>
