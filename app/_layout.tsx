@@ -8,6 +8,10 @@ import "react-native-reanimated";
 import { Platform } from "react-native";
 import "@/lib/_core/nativewind-pressable";
 import { ThemeProvider } from "@/lib/theme-provider";
+import { useFonts } from "expo-font";
+import * as SplashScreen from "expo-splash-screen";
+import { Outfit_400Regular, Outfit_700Bold } from "@expo-google-fonts/outfit";
+import { JetBrainsMono_400Regular, JetBrainsMono_700Bold } from "@expo-google-fonts/jetbrains-mono";
 import {
   SafeAreaFrameContext,
   SafeAreaInsetsContext,
@@ -29,12 +33,31 @@ export const unstable_settings = {
   anchor: "(tabs)",
 };
 
+SplashScreen.preventAutoHideAsync();
+
 export default function RootLayout() {
   const initialInsets = initialWindowMetrics?.insets ?? DEFAULT_WEB_INSETS;
   const initialFrame = initialWindowMetrics?.frame ?? DEFAULT_WEB_FRAME;
 
   const [insets, setInsets] = useState<EdgeInsets>(initialInsets);
   const [frame, setFrame] = useState<Rect>(initialFrame);
+
+  // Outfit is the body font and JetBrains Mono is used for technical/
+  // numerical labels app-wide, per .claude/design.md. Only Regular + Bold
+  // weights are loaded -- other font-weight classes (e.g. font-semibold)
+  // fall back to the platform's synthetic bolding of these two weights.
+  const [fontsLoaded, fontError] = useFonts({
+    Outfit_400Regular,
+    Outfit_700Bold,
+    JetBrainsMono_400Regular,
+    JetBrainsMono_700Bold,
+  });
+
+  useEffect(() => {
+    if (fontsLoaded || fontError) {
+      SplashScreen.hideAsync();
+    }
+  }, [fontsLoaded, fontError]);
 
   // Initialize Manus runtime for cookie injection from parent container
   useEffect(() => {
@@ -99,6 +122,10 @@ export default function RootLayout() {
       },
     };
   }, [initialInsets, initialFrame]);
+
+  if (!fontsLoaded && !fontError) {
+    return null;
+  }
 
   const content = (
     <GestureHandlerRootView style={{ flex: 1 }}>

@@ -31,21 +31,21 @@ export function Building3DView({ buildingId, showSolarSimulation = false, model3
         {/* View Mode Toggle */}
         <View className="absolute bottom-4 left-4 right-4 flex-row gap-2">
           <TouchableOpacity
-            className={`flex-1 py-3 rounded-xl ${viewMode === "wireframe" ? "bg-primary" : "bg-surface/80"}`}
+            className="flex-1 py-3 rounded-xl"
             onPress={() => setViewMode("wireframe")}
-            style={{ opacity: 0.95 }}
+            style={{ opacity: 0.95, backgroundColor: viewMode === "wireframe" ? colors.primary : colors.surface + "CC" }}
           >
             <Text className={`text-center font-semibold ${viewMode === "wireframe" ? "text-background" : "text-foreground"}`}>
-              Digital Twin
+              Rendering
             </Text>
           </TouchableOpacity>
           <TouchableOpacity
-            className={`flex-1 py-3 rounded-xl ${viewMode === "solar" ? "bg-primary" : "bg-surface/80"}`}
+            className="flex-1 py-3 rounded-xl"
             onPress={() => setViewMode("solar")}
-            style={{ opacity: 0.95 }}
+            style={{ opacity: 0.95, backgroundColor: viewMode === "solar" ? colors.primary : colors.surface + "CC" }}
           >
             <Text className={`text-center font-semibold ${viewMode === "solar" ? "text-background" : "text-foreground"}`}>
-              Solar Simulation
+              Solar Overlay
             </Text>
           </TouchableOpacity>
         </View>
@@ -53,7 +53,7 @@ export function Building3DView({ buildingId, showSolarSimulation = false, model3
 
       {/* Legend */}
       <View className="mt-4 bg-surface rounded-xl p-4">
-        <Text className="text-sm font-semibold text-foreground mb-3">Visualization Legend</Text>
+        <Text className="text-sm font-semibold text-foreground mb-3">Illustration Legend</Text>
         {viewMode === "wireframe" ? (
           <View className="gap-2">
             <View className="flex-row items-center">

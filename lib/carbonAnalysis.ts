@@ -260,15 +260,39 @@ export function analyzeCarbonImpact(
       result = calculateHVACImpact(baseline, 12);
       result.financial!.implementationCost = 200000;
       break;
-    case "combined":
-      // Combine multiple interventions
-      const solar = calculateSolarImpact(baseline, 300, building.size);
-      const hvac = calculateHVACImpact(baseline, 20);
-      
-      const totalReduction = (solar.projected!.reductionPercentage + hvac.projected!.reductionPercentage) * 0.85; // Synergy factor
-      const totalCost = solar.financial!.implementationCost + hvac.financial!.implementationCost;
-      const totalSavings = solar.financial!.annualSavings + hvac.financial!.annualSavings;
-      
+    case "combined": {
+      // Combine whichever interventions were actually configured for this
+      // scenario, instead of always assuming solar + HVAC at fixed values.
+      const subResults: Partial<CarbonAnalysisResult>[] = [];
+      if (scenario.parameters.solarCapacity) {
+        subResults.push(calculateSolarImpact(baseline, scenario.parameters.solarCapacity, building.size));
+      }
+      if (scenario.parameters.hvacEfficiencyGain) {
+        subResults.push(calculateHVACImpact(baseline, scenario.parameters.hvacEfficiencyGain));
+      }
+      if (scenario.parameters.windTurbines) {
+        subResults.push(calculateWindImpact(baseline, scenario.parameters.windTurbines));
+      }
+      if (scenario.parameters.envelopeUpgrade) {
+        const envelope = calculateHVACImpact(baseline, 12);
+        envelope.financial!.implementationCost = 200000;
+        subResults.push(envelope);
+      }
+      // Fall back to the original solar + HVAC defaults if nothing was configured.
+      if (subResults.length === 0) {
+        subResults.push(calculateSolarImpact(baseline, 300, building.size));
+        subResults.push(calculateHVACImpact(baseline, 20));
+      }
+
+      // Combining multiple measures has diminishing returns (they overlap on
+      // the same energy budget), so only apply the synergy discount when
+      // more than one measure is actually being combined.
+      const rawReduction = subResults.reduce((sum, r) => sum + r.projected!.reductionPercentage, 0);
+      const synergyFactor = subResults.length > 1 ? 0.85 : 1;
+      const totalReduction = Math.min(rawReduction * synergyFactor, 95);
+      const totalCost = subResults.reduce((sum, r) => sum + r.financial!.implementationCost, 0);
+      const totalSavings = subResults.reduce((sum, r) => sum + r.financial!.annualSavings, 0);
+
       result = {
         projected: {
           annualEmissions: baseline.annualEmissions * (1 - totalReduction / 100),
@@ -289,6 +313,7 @@ export function analyzeCarbonImpact(
         },
       };
       break;
+    }
   }
 
   return {

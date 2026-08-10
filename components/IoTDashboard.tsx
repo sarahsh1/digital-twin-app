@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { View, Text, ScrollView } from "react-native";
+import { Ionicons } from "@expo/vector-icons";
 import { useColors } from "@/hooks/use-colors";
 
 interface IoTMetric {
@@ -7,7 +8,7 @@ interface IoTMetric {
   name: string;
   value: number;
   unit: string;
-  icon: string;
+  icon: keyof typeof Ionicons.glyphMap;
   trend: "up" | "down" | "stable";
   status: "normal" | "warning" | "critical";
 }
@@ -15,12 +16,12 @@ interface IoTMetric {
 export function IoTDashboard() {
   const colors = useColors();
   const [metrics, setMetrics] = useState<IoTMetric[]>([
-    { id: "energy", name: "Energy Usage", value: 850, unit: "kW", icon: "⚡", trend: "down", status: "normal" },
-    { id: "temp", name: "Avg Temperature", value: 24, unit: "°C", icon: "🌡️", trend: "stable", status: "normal" },
-    { id: "co2", name: "CO₂ Emissions", value: 1250, unit: "kg/day", icon: "🌫️", trend: "down", status: "normal" },
-    { id: "occupancy", name: "Occupancy", value: 78, unit: "%", icon: "👥", trend: "up", status: "normal" },
-    { id: "hvac", name: "HVAC Efficiency", value: 92, unit: "%", icon: "❄️", trend: "up", status: "normal" },
-    { id: "solar", name: "Solar Generation", value: 120, unit: "kW", icon: "☀️", trend: "up", status: "normal" },
+    { id: "energy", name: "Energy Usage", value: 850, unit: "kW", icon: "flash", trend: "down", status: "normal" },
+    { id: "temp", name: "Avg Temperature", value: 24, unit: "°C", icon: "thermometer", trend: "stable", status: "normal" },
+    { id: "co2", name: "CO₂ Emissions", value: 1250, unit: "kg/day", icon: "cloud", trend: "down", status: "normal" },
+    { id: "occupancy", name: "Occupancy", value: 78, unit: "%", icon: "people", trend: "up", status: "normal" },
+    { id: "hvac", name: "HVAC Efficiency", value: 92, unit: "%", icon: "snow", trend: "up", status: "normal" },
+    { id: "solar", name: "Solar Generation", value: 120, unit: "kW", icon: "sunny", trend: "up", status: "normal" },
   ]);
 
   // Simulate real-time data updates
@@ -59,7 +60,7 @@ export function IoTDashboard() {
     return (
       <View className="bg-surface rounded-xl p-4 mr-3" style={{ width: 160 }}>
         <View className="flex-row items-center justify-between mb-2">
-          <Text className="text-2xl">{metric.icon}</Text>
+          <Ionicons name={metric.icon} size={22} color={colors.foreground} />
           <View className="flex-row items-center">
             <Text style={{ color: trendColor, fontSize: 16, fontWeight: "bold" }}>{trendSymbol}</Text>
           </View>
@@ -71,8 +72,8 @@ export function IoTDashboard() {
         <Text className="text-xs text-muted">{metric.name}</Text>
         <View className="mt-2 pt-2 border-t border-border">
           <View className="flex-row items-center">
-            <View className="w-2 h-2 rounded-full mr-2 bg-success" />
-            <Text className="text-xs text-muted">Live</Text>
+            <View className="w-2 h-2 rounded-full mr-2 bg-secondary" />
+            <Text className="text-xs text-muted">Simulated</Text>
           </View>
         </View>
       </View>
@@ -82,10 +83,10 @@ export function IoTDashboard() {
   return (
     <View className="mb-6">
       <View className="px-6 mb-3 flex-row items-center justify-between">
-        <Text className="text-lg font-bold text-foreground">Live IoT Data</Text>
+        <Text className="text-lg font-bold text-foreground">Sample System Data</Text>
         <View className="flex-row items-center">
-          <View className="w-2 h-2 rounded-full bg-success mr-2" />
-          <Text className="text-xs text-muted">Real-time</Text>
+          <View className="w-2 h-2 rounded-full bg-secondary mr-2" />
+          <Text className="text-xs text-muted">Simulated, not connected to sensors</Text>
         </View>
       </View>
       <ScrollView
