@@ -13,6 +13,7 @@ import { CardTitle } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
 import { Building3DView } from "@/components/Building3DView";
 import { HudGrid } from "@/components/ui/hud-grid";
+import { LoadingIndicator } from "@/components/ui/loading-indicator";
 import { loadDemoBuildings } from "@/lib/demoBuildings";
 import { LineChart, BarChart } from "react-native-chart-kit";
 import { Dimensions } from "react-native";
@@ -358,7 +359,7 @@ export default function BuildingDetailScreen() {
     return (
       <ScreenContainer>
         <View className="flex-1 items-center justify-center">
-          <Text className="text-muted">Loading...</Text>
+          <LoadingIndicator label="Loading Building" />
         </View>
       </ScreenContainer>
     );
@@ -503,10 +504,23 @@ export default function BuildingDetailScreen() {
                 >
                   Visual Archive
                 </Text>
-                <Text className="text-muted text-xs" style={{ marginBottom: 12 }}>
-                  Static illustration, not a live 3D model
-                </Text>
-                <Building3DView buildingId={building.id} model3D={building.model3D} solarModel={building.solarModel} />
+                {building.model3D ? (
+                  <>
+                    <Text className="text-muted text-xs" style={{ marginBottom: 12 }}>
+                      Static illustration, not a live 3D model
+                    </Text>
+                    <Building3DView buildingId={building.id} model3D={building.model3D} solarModel={building.solarModel} />
+                  </>
+                ) : (
+                  <View
+                    className="rounded-xl p-4"
+                    style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface }}
+                  >
+                    <Text className="text-muted text-sm">
+                      No visual archive available for this building yet.
+                    </Text>
+                  </View>
+                )}
               </View>
 
               {/* Quick Actions */}

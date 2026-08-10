@@ -8,6 +8,7 @@ import { Ionicons } from '@expo/vector-icons'
 import { ScreenContainer } from '@/components/screen-container'
 import { Badge } from '@/components/ui/badge'
 import { MetricCard } from '@/components/ui/card'
+import { LoadingIndicator } from '@/components/ui/loading-indicator'
 import { useColors } from '@/hooks/use-colors'
 import { getSimulationById, type FormattedSimulation } from '@/lib/simulations'
 
@@ -20,7 +21,8 @@ const PAGE_MARGIN = 24
 // to 3 decimal places, producing artifacts like "$2,064,516.129" -- rounding
 // to the nearest dollar first keeps every currency figure on this page a
 // clean whole number with comma separators.
-const formatCurrency = (value: number) => `$${Math.round(value).toLocaleString()}`
+const formatCurrency = (value: number) =>
+  `$${Math.round(value).toLocaleString()}`
 
 export default function SimulationResultsScreen() {
   const colors = useColors()
@@ -44,7 +46,7 @@ export default function SimulationResultsScreen() {
     return (
       <ScreenContainer>
         <View className="flex-1 items-center justify-center">
-          <Text className="text-muted">Loading results...</Text>
+          <LoadingIndicator label="Loading Results" />
         </View>
       </ScreenContainer>
     )
@@ -65,7 +67,13 @@ export default function SimulationResultsScreen() {
     <ScreenContainer>
       <View className="flex-1">
         {/* Header */}
-        <View style={{ paddingHorizontal: PAGE_MARGIN, paddingTop: 16, paddingBottom: 16 }}>
+        <View
+          style={{
+            paddingHorizontal: PAGE_MARGIN,
+            paddingTop: 16,
+            paddingBottom: 16
+          }}
+        >
           <View className="flex-row items-center justify-between">
             <TouchableOpacity
               onPress={() => {
@@ -73,12 +81,24 @@ export default function SimulationResultsScreen() {
                 router.back()
               }}
               className="rounded-full items-center justify-center"
-              style={{ width: 36, height: 36, borderWidth: 1, borderColor: colors.border }}
+              style={{
+                width: 36,
+                height: 36,
+                borderWidth: 1,
+                borderColor: colors.border
+              }}
             >
               <Ionicons name="arrow-back" size={18} color={colors.foreground} />
             </TouchableOpacity>
             <View className="flex-row items-center gap-1.5">
-              <View style={{ width: 6, height: 6, borderRadius: 3, backgroundColor: colors.primary }} />
+              <View
+                style={{
+                  width: 6,
+                  height: 6,
+                  borderRadius: 3,
+                  backgroundColor: colors.primary
+                }}
+              />
               <Text
                 className="font-mono text-[10px] font-bold uppercase tracking-widest"
                 style={{ color: colors.primary }}
@@ -88,7 +108,10 @@ export default function SimulationResultsScreen() {
             </View>
           </View>
 
-          <View className="flex-row items-center gap-2" style={{ marginTop: 16 }}>
+          <View
+            className="flex-row items-center gap-2"
+            style={{ marginTop: 16 }}
+          >
             <Text className="text-foreground text-2xl font-bold capitalize">
               {interventionType.replace('-', ' ')} Strategy
             </Text>
@@ -101,14 +124,22 @@ export default function SimulationResultsScreen() {
 
         <ScrollView
           className="flex-1"
-          contentContainerStyle={{ paddingHorizontal: PAGE_MARGIN, paddingBottom: 24 }}
+          contentContainerStyle={{
+            paddingHorizontal: PAGE_MARGIN,
+            paddingBottom: 24
+          }}
           showsVerticalScrollIndicator={false}
         >
           {/* Hero: reduction achieved + before/after */}
           <Animated.View
             entering={FadeInUp.duration(600)}
-            className="rounded-3xl p-5"
-            style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface }}
+            style={{
+              borderRadius: 24,
+              padding: 20,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.surface
+            }}
           >
             <Text
               className="font-bold"
@@ -123,26 +154,43 @@ export default function SimulationResultsScreen() {
               {projected.annualReduction.toFixed(1)}t CO
               <Text style={{ fontSize: 16 }}>2</Text>
             </Text>
-            <Text className="text-sm" style={{ color: colors.primary, marginTop: 4 }}>
+            <Text
+              className="text-sm"
+              style={{ color: colors.primary, marginTop: 4 }}
+            >
               {projected.annualReduction.toFixed(1)} tons CO₂/year saved
             </Text>
 
-            <View className="flex-row items-center justify-between" style={{ marginTop: 20 }}>
+            <View
+              className="flex-row items-center justify-between"
+              style={{ marginTop: 20 }}
+            >
               <View
                 className="rounded-2xl px-3 py-2"
-                style={{ backgroundColor: colors.background, borderWidth: 1, borderColor: colors.border }}
+                style={{
+                  backgroundColor: colors.background,
+                  borderWidth: 1,
+                  borderColor: colors.border
+                }}
               >
                 <Text className="font-mono text-[9px] uppercase tracking-widest text-muted">
                   Baseline
                 </Text>
-                <Text className="text-foreground font-semibold" style={{ marginTop: 2 }}>
+                <Text
+                  className="text-foreground font-semibold"
+                  style={{ marginTop: 2 }}
+                >
                   {baseline.annualEmissions.toFixed(0)}t CO₂/yr
                 </Text>
               </View>
               <Ionicons name="arrow-forward" size={18} color={colors.muted} />
               <View
                 className="rounded-2xl px-3 py-2"
-                style={{ backgroundColor: colors.primary + '1A', borderWidth: 1, borderColor: colors.primary }}
+                style={{
+                  backgroundColor: colors.primary + '1A',
+                  borderWidth: 1,
+                  borderColor: colors.primary
+                }}
               >
                 <Text
                   className="font-mono text-[9px] uppercase tracking-widest"
@@ -150,7 +198,10 @@ export default function SimulationResultsScreen() {
                 >
                   Projected
                 </Text>
-                <Text className="font-semibold" style={{ color: colors.primary, marginTop: 2 }}>
+                <Text
+                  className="font-semibold"
+                  style={{ color: colors.primary, marginTop: 2 }}
+                >
                   {projected.annualEmissions.toFixed(0)}t CO₂/yr
                 </Text>
               </View>
@@ -160,16 +211,33 @@ export default function SimulationResultsScreen() {
               className="h-2 rounded-full overflow-hidden flex-row"
               style={{ marginTop: 16, backgroundColor: colors.background }}
             >
-              <View style={{ width: `${100 - reductionPercentage}%`, backgroundColor: colors.border }} />
-              <View style={{ width: `${reductionPercentage}%`, backgroundColor: colors.primary }} />
+              <View
+                style={{
+                  width: `${100 - reductionPercentage}%`,
+                  backgroundColor: colors.border
+                }}
+              />
+              <View
+                style={{
+                  width: `${reductionPercentage}%`,
+                  backgroundColor: colors.primary
+                }}
+              />
             </View>
-            <Text className="text-xs text-center" style={{ marginTop: 8, color: colors.primary }}>
+            <Text
+              className="text-xs text-center"
+              style={{ marginTop: 8, color: colors.primary }}
+            >
               ↓ {reductionPercentage.toFixed(1)}% reduction achieved
             </Text>
           </Animated.View>
 
           {/* Key results */}
-          <Animated.View entering={FadeInDown.delay(200).duration(600)} className="gap-4" style={{ marginTop: 24 }}>
+          <Animated.View
+            entering={FadeInDown.delay(200).duration(600)}
+            className="gap-4"
+            style={{ marginTop: 24 }}
+          >
             <View className="flex-row gap-4">
               <MetricCard
                 className="flex-1 rounded-3xl"
@@ -186,7 +254,7 @@ export default function SimulationResultsScreen() {
                 tone="primary"
               />
             </View>
-            <View className="flex-row gap-4">
+            <View className="flex-row gap-4 py-4">
               <MetricCard
                 className="flex-1 rounded-3xl"
                 label="Payback Period"
@@ -213,8 +281,14 @@ export default function SimulationResultsScreen() {
           {/* Confidence */}
           <Animated.View
             entering={FadeInDown.delay(400).duration(600)}
-            className="rounded-3xl p-4"
-            style={{ marginTop: 24, borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface }}
+            style={{
+              marginTop: 24,
+              borderRadius: 24,
+              padding: 16,
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.surface
+            }}
           >
             <View className="flex-row items-center justify-between">
               <Text className="font-mono text-xs uppercase tracking-widest text-muted">
@@ -228,12 +302,21 @@ export default function SimulationResultsScreen() {
               className="h-2 rounded-full overflow-hidden"
               style={{ marginTop: 12, backgroundColor: colors.background }}
             >
-              <View style={{ width: `${confidence.percentage}%`, backgroundColor: colors.primary }} />
+              <View
+                style={{
+                  width: `${confidence.percentage}%`,
+                  backgroundColor: colors.primary
+                }}
+              />
             </View>
             <View style={{ marginTop: 16, gap: 8 }}>
               {confidence.factors.map((factor, index) => (
                 <View key={index} className="flex-row items-center gap-2">
-                  <Ionicons name="checkmark-circle" size={14} color={colors.primary} />
+                  <Ionicons
+                    name="checkmark-circle"
+                    size={14}
+                    color={colors.primary}
+                  />
                   <Text className="text-foreground text-sm">{factor}</Text>
                 </View>
               ))}
@@ -274,16 +357,32 @@ export default function SimulationResultsScreen() {
               router.push('/(tabs)/simulations')
             }}
             className="rounded-2xl items-center"
-            style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface, paddingVertical: 14 }}
+            style={{
+              borderWidth: 1,
+              borderColor: colors.border,
+              backgroundColor: colors.surface,
+              paddingVertical: 14
+            }}
           >
-            <Text className="text-foreground font-semibold">View All Simulations</Text>
+            <Text className="text-foreground font-semibold">
+              View All Simulations
+            </Text>
           </TouchableOpacity>
 
           <View
             className="rounded-2xl flex-row items-center justify-center gap-2"
-            style={{ borderWidth: 1, borderColor: colors.border, opacity: 0.6, paddingVertical: 14 }}
+            style={{
+              borderWidth: 1,
+              borderColor: colors.border,
+              opacity: 0.6,
+              paddingVertical: 14
+            }}
           >
-            <Ionicons name="document-text-outline" size={18} color={colors.muted} />
+            <Ionicons
+              name="document-text-outline"
+              size={18}
+              color={colors.muted}
+            />
             <Text className="text-muted font-semibold">Export PDF Report</Text>
             <Badge label="Coming soon" tone="neutral" />
           </View>

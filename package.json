@@ -21,6 +21,8 @@
     "build": "pnpm build:web && pnpm build:server"
   },
   "dependencies": {
+    "@expo-google-fonts/jetbrains-mono": "^0.4.1",
+    "@expo-google-fonts/outfit": "^0.4.3",
     "@expo/vector-icons": "^15.0.3",
     "@react-native-async-storage/async-storage": "^2.2.0",
     "@react-native-community/masked-view": "^0.1.11",
@@ -34,6 +36,7 @@
     "@trpc/react-query": "11.7.2",
     "@trpc/server": "11.7.2",
     "axios": "^1.13.2",
+    "babel-preset-expo": "~54.0.12",
     "chart.js": "^4.5.1",
     "clsx": "^2.1.1",
     "cookie": "^1.1.1",

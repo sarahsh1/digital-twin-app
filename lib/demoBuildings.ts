@@ -58,6 +58,26 @@ export const demoBuildings: DemoBuilding[] = [
     createdAt: new Date("2024-01-02").toISOString(),
     isDemo: true,
   },
+  // 3. KFUPM -- no real photo/3D/solar assets provided yet, so image fields
+  // are left unset; the app's icon fallback renders instead of a fabricated
+  // or mismatched visual. Size/floors/emissions/energy are illustrative
+  // estimates (neither of us had real figures), same convention as Bapco's
+  // "estimated" size above.
+  {
+    id: "demo-kfupm",
+    name: "King Fahd University of Petroleum and Minerals (KFUPM)",
+    type: "educational",
+    size: 3500000, // Large multi-college campus, estimated
+    floors: 5, // Representative academic building, estimated
+    location: "Dhahran, Saudi Arabia",
+    lat: 26.3055,
+    lng: 50.1394,
+    description: "Leading research university and petroleum engineering institution with extensive academic, research, and residential facilities across a large campus",
+    currentEmissions: 4200, // tons CO2/year, estimated
+    energyConsumption: 28000000, // kWh/year, estimated
+    createdAt: new Date("2024-01-03").toISOString(),
+    isDemo: true,
+  },
 ];
 
 // Demo building ids that have existed at any point, including ones since
@@ -67,6 +87,7 @@ export const demoBuildings: DemoBuilding[] = [
 const ALL_KNOWN_DEMO_IDS = new Set([
   "demo-sce-building",
   "demo-bapco",
+  "demo-kfupm",
   "demo-alba",
   "demo-kingdom-university",
   "demo-king-hamad-hospital",

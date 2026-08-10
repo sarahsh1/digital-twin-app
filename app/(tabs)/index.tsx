@@ -253,8 +253,8 @@ export default function HomeScreen() {
             className="mt-4 text-4xl font-bold tracking-tight"
             style={{
               color: colors.primary,
-              textShadowColor: colors.primary,
-              textShadowRadius: 18,
+              textShadowColor: 'rgba(45, 212, 191, 0.4)',
+              textShadowRadius: 8,
               textShadowOffset: { width: 0, height: 0 }
             }}
           >
@@ -267,7 +267,7 @@ export default function HomeScreen() {
             Digital Twin Sustainability Platform
           </Text>
           <Text
-            className="text-muted text-sm mb-4 mt-2"
+            className="font-sans text-muted text-sm mt-2"
             style={{ maxWidth: '85%' }}
           >
             Proactive carbon reduction through AI-powered optimization
@@ -328,7 +328,7 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(600).duration(600)}
           style={{ marginTop: 32 }}
         >
-          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mt-4 mb-1">
+          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mt-4 mb-4">
             {'Quick Actions'}
           </SectionHeader>
           <View className="flex-row gap-4">
@@ -347,10 +347,10 @@ export default function HomeScreen() {
                 >
                   <Ionicons name="add" size={18} color="#fff" />
                 </View>
-                <Text className="text-foreground font-semibold text-sm">
+                <Text className="font-sans text-foreground font-semibold text-sm">
                   Add Building
                 </Text>
-                <Text className="text-muted text-xs mt-2">
+                <Text className="font-sans text-muted text-xs mt-2">
                   Upload or design new building
                 </Text>
               </TouchableOpacity>
@@ -371,10 +371,10 @@ export default function HomeScreen() {
                 >
                   <Ionicons name="flash" size={18} color={colors.secondary} />
                 </View>
-                <Text className="text-foreground font-semibold text-sm">
+                <Text className="font-sans text-foreground font-semibold text-sm">
                   New Simulation
                 </Text>
-                <Text className="text-muted text-xs mt-2">
+                <Text className="font-sans text-muted text-xs mt-2">
                   Run carbon reduction scenario
                 </Text>
               </TouchableOpacity>
@@ -387,7 +387,7 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(800).duration(600)}
           style={{ marginTop: 32 }}
         >
-          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mt-4 mb-1">
+          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mt-2 mb-2">
             {'Platform Features'}
           </SectionHeader>
           <View className="gap-4">
@@ -415,7 +415,7 @@ export default function HomeScreen() {
                   </View>
                   <View className="flex-1">
                     <View className="flex-row items-center gap-2">
-                      <Text className="text-foreground font-semibold text-sm">
+                      <Text className="font-sans text-foreground font-semibold text-sm">
                         {f.title}
                       </Text>
                       <Text
@@ -425,7 +425,7 @@ export default function HomeScreen() {
                         {f.code}
                       </Text>
                     </View>
-                    <Text className="text-muted text-xs mt-2">
+                    <Text className="font-sans text-muted text-xs mt-2">
                       {f.description}
                     </Text>
                   </View>
@@ -440,6 +440,9 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(1000).duration(600)}
           style={{ marginTop: 32 }}
         >
+          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mt-2 mb-2">
+            {'Digital Twin Visualization'}
+          </SectionHeader>
           <FramedImage
             source={require('@/assets/images/hero-digital-twin.png')}
             height={200}
@@ -451,7 +454,7 @@ export default function HomeScreen() {
           entering={FadeInDown.delay(1200).duration(600)}
           style={{ marginTop: 32 }}
         >
-          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mt-4 mb-1">
+          <SectionHeader className="font-mono text-xs uppercase tracking-[0.25em] text-muted mb-2">
             {'AI Insights'}
           </SectionHeader>
 
@@ -470,10 +473,10 @@ export default function HomeScreen() {
               <Ionicons name="bulb" size={16} color={colors.primary} />
             </View>
             <View className="flex-1">
-              <Text className="text-foreground font-semibold mb-2">
+              <Text className="font-sans text-foreground font-semibold mb-2">
                 Get Started
               </Text>
-              <Text className="text-muted text-sm">
+              <Text className="font-sans text-muted text-sm">
                 Add your first building to unlock AI-powered carbon reduction
                 recommendations and simulation capabilities
               </Text>
