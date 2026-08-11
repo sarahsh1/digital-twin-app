@@ -1,14 +1,28 @@
 import { ScrollView, Text, View, TouchableOpacity, Image, TextInput, Alert } from "react-native";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { Link, router, useFocusEffect } from "expo-router";
 import { useCallback } from "react";
+import { LinearGradient } from "expo-linear-gradient";
 import Animated, { FadeInDown } from "react-native-reanimated";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
 import { loadDemoBuildings } from "@/lib/demoBuildings";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
 import { useColors } from "@/hooks/use-colors";
+
+// Same spacing system as the homepage: one 8px grid, page margin applied
+// once at the top level. See app/(tabs)/index.tsx for the full rationale.
+const PAGE_MARGIN = 24;
+
+const buildingTypeIcon: Record<string, keyof typeof Ionicons.glyphMap> = {
+  office: "business",
+  residential: "home",
+  industrial: "cog",
+  retail: "storefront",
+};
 
 interface Building {
   id: string;
@@ -19,6 +33,7 @@ interface Building {
   location: string;
   image?: string;
   createdAt: string;
+  isDemo?: boolean;
 }
 
 export default function BuildingsScreen() {
@@ -57,45 +72,56 @@ export default function BuildingsScreen() {
           style: "destructive",
           onPress: async () => {
             try {
-              const filtered = buildings.filter(b => b.id !== id);
+              const filtered = buildings.filter((b) => b.id !== id);
               await AsyncStorage.setItem("buildings", JSON.stringify(filtered));
               setBuildings(filtered);
               Haptics.notificationAsync(Haptics.NotificationFeedbackType.Success);
             } catch (error) {
               Alert.alert("Error", "Failed to delete building");
             }
-          }
-        }
+          },
+        },
       ]
     );
   };
 
-  const filteredBuildings = buildings.filter(b =>
-    b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
-    b.location.toLowerCase().includes(searchQuery.toLowerCase())
+  const filteredBuildings = buildings.filter(
+    (b) =>
+      b.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+      b.location.toLowerCase().includes(searchQuery.toLowerCase())
   );
 
   return (
     <ScreenContainer>
       <View className="flex-1">
         {/* Header */}
-        <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
-          <Text className="text-foreground text-2xl font-bold mb-4">Buildings</Text>
-          
-          {/* Search Bar */}
-          <TextInput
-            value={searchQuery}
-            onChangeText={setSearchQuery}
-            placeholder="Search buildings..."
-            placeholderTextColor={colors.muted}
-            className="bg-surface rounded-xl p-3 text-foreground"
-            style={{ borderWidth: 1, borderColor: colors.border }}
-          />
+        <View style={{ paddingHorizontal: PAGE_MARGIN, paddingTop: 16, paddingBottom: 16 }}>
+          <View
+            className="flex-row items-center gap-2 rounded-xl px-4"
+            style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface }}
+          >
+            <Ionicons name="search" size={18} color={colors.muted} />
+            <TextInput
+              value={searchQuery}
+              onChangeText={setSearchQuery}
+              placeholder="Search buildings..."
+              placeholderTextColor={colors.muted}
+              className="flex-1 text-foreground"
+              style={{ paddingVertical: 12 }}
+            />
+          </View>
         </View>
 
-        <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
+        <ScrollView
+          className="flex-1"
+          contentContainerStyle={{ paddingHorizontal: PAGE_MARGIN, paddingBottom: 32 }}
+          showsVerticalScrollIndicator={false}
+        >
           {buildings.length === 0 ? (
-            <Animated.View entering={FadeInDown.duration(400)} className="items-center justify-center py-16">
+            <Animated.View
+              entering={FadeInDown.duration(400)}
+              style={{ alignItems: "center", justifyContent: "center", paddingVertical: 64 }}
+            >
               <Image
                 source={require("@/assets/images/empty-buildings.png")}
                 style={{ width: 200, height: 200, marginBottom: 16 }}
@@ -106,109 +132,199 @@ export default function BuildingsScreen() {
                 Add your first building to start analyzing carbon reduction opportunities
               </Text>
               <Link href="/buildings/add" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                  className="bg-primary rounded-xl px-6 py-3"
+                  className="bg-primary rounded-xl px-6 py-3 flex-row items-center gap-2"
                 >
-                  <Text className="text-white font-semibold">+ Add Building</Text>
+                  <Ionicons name="add" size={18} color="#fff" />
+                  <Text className="text-white font-semibold">Add Building</Text>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
           ) : (
             <>
-              {/* Add Button */}
+              {/* Add Building */}
               <Link href="/buildings/add" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                  className="bg-primary rounded-2xl p-4 my-4 flex-row items-center justify-between"
+                  className="rounded-2xl p-4 flex-row items-center justify-between"
+                  style={{
+                    marginBottom: 24,
+                    borderWidth: 1,
+                    borderColor: colors.border,
+                    backgroundColor: colors.surface,
+                  }}
                 >
                   <View>
-                    <Text className="text-white text-lg font-bold">Add New Building</Text>
-                    <Text className="text-white/80 text-sm">Upload or design from scratch</Text>
+                    <Text className="text-foreground text-lg font-bold">Add New Building</Text>
+                    <Text className="text-muted text-sm mt-1">Upload or design from scratch</Text>
                   </View>
-                  <Text className="text-white text-3xl">+</Text>
+                  <View
+                    className="w-14 h-14 rounded-full items-center justify-center"
+                    style={{ borderWidth: 1, borderColor: colors.primary }}
+                  >
+                    <Ionicons name="add" size={22} color={colors.primary} />
+                  </View>
                 </TouchableOpacity>
               </Link>
 
+              {/* Section label */}
+              <Text
+                className="font-mono text-sm font-bold uppercase tracking-[0.25em]"
+                style={{ color: colors.primary, marginBottom: 16 }}
+              >
+                Buildings ({filteredBuildings.length})
+              </Text>
+
               {/* Buildings List */}
-              <View className="gap-4 pb-6">
+              <View className="gap-4" style={{ paddingBottom: 8 }}>
                 {filteredBuildings.map((building, index) => (
-                  <Animated.View 
-                    key={building.id} 
+                  <Animated.View
+                    key={building.id}
                     entering={FadeInDown.delay(index * 100).duration(400)}
                   >
-                    <View 
-                      className="bg-surface rounded-2xl overflow-hidden"
-                      style={{ borderWidth: 1, borderColor: colors.border }}
+                    <View
+                      className="rounded-2xl overflow-hidden"
+                      style={{ borderWidth: 1, borderColor: colors.border, backgroundColor: colors.surface }}
                     >
-                      {building.image ? (
-                        <Image
-                          source={typeof building.image === 'string' ? { uri: building.image } : building.image}
-                          style={{ width: "100%", height: 220 }}
-                          resizeMode="cover"
+                      <View style={{ position: "relative" }}>
+                        {building.image ? (
+                          <Image
+                            source={typeof building.image === "string" ? { uri: building.image } : building.image}
+                            style={{ width: "100%", height: 220 }}
+                            resizeMode="cover"
+                          />
+                        ) : (
+                          <View
+                            className="w-full items-center justify-center"
+                            style={{ height: 220, backgroundColor: colors.primary + "20" }}
+                          >
+                            <Ionicons
+                              name={buildingTypeIcon[building.type] ?? "business"}
+                              size={56}
+                              color={colors.primary}
+                            />
+                          </View>
+                        )}
+                        <LinearGradient
+                          colors={["transparent", "rgba(0,0,0,0.85)"]}
+                          style={{ position: "absolute", left: 0, right: 0, bottom: 0, height: "65%" }}
                         />
-                      ) : (
-                        <View 
-                          className="w-full items-center justify-center"
-                          style={{ height: 220, backgroundColor: colors.primary + "20" }}
-                        >
-                          <Text style={{ fontSize: 60 }}>
-                            {building.type === "office" ? "🏢" : 
-                             building.type === "residential" ? "🏘️" : 
-                             building.type === "industrial" ? "🏭" : "🏬"}
+                        <View style={{ position: "absolute", left: 16, right: 16, bottom: 16 }}>
+                          <Text className="font-mono text-[10px] uppercase tracking-[0.2em] text-white/80">
+                            {building.type}
+                          </Text>
+                          <Text className="text-white text-xl font-bold" style={{ marginTop: 4 }}>
+                            {building.name}
                           </Text>
                         </View>
-                      )}
-                      
+                        {building.isDemo && (
+                          <View style={{ position: "absolute", top: 8, right: 8 }}>
+                            <Badge label="Sample" tone="sample" />
+                          </View>
+                        )}
+                      </View>
+
                       <View className="p-4">
-                        <Text className="text-foreground text-xl font-bold mb-1">{building.name}</Text>
-                        <Text className="text-muted text-sm capitalize mb-2">{building.type}</Text>
-                        
-                        <View className="flex-row gap-4 mb-3">
+                        <View className="flex-row gap-4">
                           <View className="flex-1">
-                            <Text className="text-muted text-xs">Size</Text>
-                            <Text className="text-foreground font-semibold">{building.size.toLocaleString()} sq ft</Text>
+                            <Text className="font-mono text-[10px] uppercase tracking-widest text-muted">
+                              Size
+                            </Text>
+                            <Text className="text-foreground font-semibold text-sm" style={{ marginTop: 4 }}>
+                              {building.size.toLocaleString()} sq ft
+                            </Text>
                           </View>
                           <View className="flex-1">
-                            <Text className="text-muted text-xs">Floors</Text>
-                            <Text className="text-foreground font-semibold">{building.floors}</Text>
+                            <Text className="font-mono text-[10px] uppercase tracking-widest text-muted">
+                              Floors
+                            </Text>
+                            <Text className="text-foreground font-semibold text-sm" style={{ marginTop: 4 }}>
+                              {building.floors}
+                            </Text>
                           </View>
                         </View>
-                        
-                        <Text className="text-muted text-sm mb-4">📍 {building.location}</Text>
-                        
+
+                        <View className="flex-row items-center gap-1" style={{ marginTop: 16 }}>
+                          <Ionicons name="location" size={14} color={colors.muted} />
+                          <Text className="text-muted text-sm">{building.location}</Text>
+                        </View>
+
                         {/* Actions */}
-                        <View className="flex-row gap-2">
+                        <View className="flex-row gap-2" style={{ marginTop: 16 }}>
                           <TouchableOpacity
                             onPress={() => {
                               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                               router.push(`/buildings/${building.id}`);
                             }}
-                            className="flex-1 bg-primary rounded-xl py-3 items-center"
+                            className="flex-1 bg-primary rounded-xl flex-row items-center justify-center gap-2"
+                            style={{ height: 48 }}
                           >
-                            <Text className="text-white font-semibold">View Details</Text>
+                            <View
+                              style={{
+                                position: "absolute",
+                                left: 8,
+                                top: 8,
+                                width: 10,
+                                height: 10,
+                                borderLeftWidth: 2,
+                                borderTopWidth: 2,
+                                borderColor: "#05100D",
+                              }}
+                            />
+                            <View
+                              style={{
+                                position: "absolute",
+                                right: 8,
+                                bottom: 8,
+                                width: 10,
+                                height: 10,
+                                borderRightWidth: 2,
+                                borderBottomWidth: 2,
+                                borderColor: "#05100D",
+                              }}
+                            />
+                            <Ionicons name="eye" size={15} color="#05100D" />
+                            <Text
+                              className="font-mono uppercase tracking-widest text-sm"
+                              style={{ color: "#05100D", fontWeight: "700" }}
+                            >
+                              View Details
+                            </Text>
                           </TouchableOpacity>
-                          
+
                           <TouchableOpacity
                             onPress={() => {
                               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                               router.push("/simulations/new");
                             }}
-                            className="flex-1 bg-secondary/20 rounded-xl py-3 items-center"
-                            style={{ borderWidth: 1, borderColor: colors.primary }}
+                            className="rounded-xl items-center justify-center"
+                            style={{
+                              width: 48,
+                              height: 48,
+                              borderWidth: 1,
+                              borderColor: colors.border,
+                              backgroundColor: colors.secondary + "1A",
+                            }}
                           >
-                            <Text className="font-semibold" style={{ color: colors.primary }}>Simulate</Text>
+                            <Ionicons name="play" size={16} color={colors.secondary} />
                           </TouchableOpacity>
-                          
+
                           <TouchableOpacity
                             onPress={() => {
                               Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
                               deleteBuilding(building.id);
                             }}
-                            className="bg-error/20 rounded-xl px-4 py-3 items-center justify-center"
-                            style={{ borderWidth: 1, borderColor: colors.error }}
+                            className="rounded-xl items-center justify-center"
+                            style={{
+                              width: 48,
+                              height: 48,
+                              borderWidth: 1,
+                              borderColor: colors.error,
+                              backgroundColor: colors.error + "1A",
+                            }}
                           >
-                            <Text className="text-error font-semibold">🗑️</Text>
+                            <Ionicons name="trash" size={16} color={colors.error} />
                           </TouchableOpacity>
                         </View>
                       </View>

@@ -2,8 +2,12 @@ import { useState, useEffect } from "react";
 import { ScrollView, Text, View, TouchableOpacity, Modal, Alert, TextInput } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
+import { MetricCard } from "@/components/ui/card";
+import { ScreenTitle } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
 
 interface Transaction {
@@ -14,6 +18,7 @@ interface Transaction {
   verificationStatus: "Verified" | "Pending";
   timestamp: string;
   blockchainId: string;
+  isDemo?: boolean;
 }
 
 const mockTransactions: Transaction[] = [
@@ -25,6 +30,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Verified",
     timestamp: "2 hours ago",
     blockchainId: "0x7f3a...9c2e",
+    isDemo: true,
   },
   {
     id: "2",
@@ -34,6 +40,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Verified",
     timestamp: "1 day ago",
     blockchainId: "0x4b1c...7d8f",
+    isDemo: true,
   },
   {
     id: "3",
@@ -43,6 +50,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Pending",
     timestamp: "3 days ago",
     blockchainId: "0x9e5a...3f1b",
+    isDemo: true,
   },
   {
     id: "4",
@@ -52,6 +60,7 @@ const mockTransactions: Transaction[] = [
     verificationStatus: "Verified",
     timestamp: "1 week ago",
     blockchainId: "0x2c7d...8a4e",
+    isDemo: true,
   },
 ];
 
@@ -143,22 +152,20 @@ export default function BlockchainScreen() {
       {/* Header */}
       <View className="flex-row items-start justify-between mb-4">
         <View className="flex-1">
-          <Text className="text-lg font-bold text-foreground mb-2">{transaction.supplierName}</Text>
+          <View className="flex-row items-center gap-2 mb-2 flex-wrap">
+            <Text className="text-lg font-bold text-foreground">{transaction.supplierName}</Text>
+            {transaction.isDemo && <Badge label="Sample" tone="sample" />}
+          </View>
           <View className="flex-row items-center">
-            <View className="bg-secondary/20 px-3 py-1.5 rounded-full">
+            <View className="px-3 py-1.5 rounded-full" style={{ backgroundColor: colors.secondary + "33" }}>
               <Text className="text-sm font-medium text-secondary">{transaction.transactionType}</Text>
             </View>
           </View>
         </View>
-        <View className={`px-3 py-1.5 rounded-full ${
-          transaction.verificationStatus === "Verified" ? "bg-success/20" : "bg-warning/20"
-        }`}>
-          <Text className={`text-sm font-medium ${
-            transaction.verificationStatus === "Verified" ? "text-success" : "text-warning"
-          }`}>
-            {transaction.verificationStatus === "Verified" ? "✓ Verified" : "⏳ Pending"}
-          </Text>
-        </View>
+        <Badge
+          label={transaction.verificationStatus === "Verified" ? "✓ Verified" : "⏳ Pending"}
+          tone={transaction.verificationStatus === "Verified" ? "success" : "warning"}
+        />
       </View>
 
       {/* CO2 Value */}
@@ -195,7 +202,7 @@ export default function BlockchainScreen() {
           <View className="flex-row items-center justify-between p-6 border-b" style={{ borderBottomColor: colors.border }}>
             <Text className="text-2xl font-bold text-foreground">Transaction Details</Text>
             <TouchableOpacity onPress={() => setSelectedTransaction(null)}>
-              <Text className="text-3xl text-muted">×</Text>
+              <Ionicons name="close" size={26} color={colors.muted} />
             </TouchableOpacity>
           </View>
 
@@ -233,8 +240,11 @@ export default function BlockchainScreen() {
 
                 {/* Blockchain Verification */}
                 <View className="bg-surface rounded-2xl p-5 mb-4">
-                  <Text className="text-sm font-semibold text-muted mb-4">BLOCKCHAIN VERIFICATION</Text>
-                  
+                  <View className="flex-row items-center justify-between mb-4">
+                    <Text className="text-sm font-semibold text-muted">BLOCKCHAIN VERIFICATION</Text>
+                    <Badge label="Demo data" tone="neutral" />
+                  </View>
+
                   <View className="mb-4">
                     <Text className="text-sm text-muted mb-1">Network</Text>
                     <Text className="text-lg font-semibold text-foreground">Energy Web Chain</Text>
@@ -256,16 +266,15 @@ export default function BlockchainScreen() {
                   </View>
                 </View>
 
-                {/* Actions */}
-                <TouchableOpacity
-                  className="bg-secondary/10 border border-secondary rounded-xl py-4 items-center active:opacity-70"
-                  onPress={() => {
-                    Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
-                    Alert.alert("Blockchain Explorer", "This would open the transaction in a blockchain explorer");
-                  }}
+                {/* Honest disclosure -- this prototype isn't connected to a live chain */}
+                <View
+                  className="rounded-xl py-4 px-4 items-center"
+                  style={{ borderWidth: 1, borderColor: colors.border }}
                 >
-                  <Text className="text-secondary text-lg font-semibold">View on Blockchain Explorer</Text>
-                </TouchableOpacity>
+                  <Text className="text-muted text-sm text-center">
+                    This is illustrative verification data. This prototype isn't connected to a live blockchain network yet, so there's no explorer link to open.
+                  </Text>
+                </View>
               </>
             )}
           </ScrollView>
@@ -287,7 +296,7 @@ export default function BlockchainScreen() {
           <View className="flex-row items-center justify-between mb-6">
             <Text className="text-2xl font-bold text-foreground">Add Supply Chain Partner</Text>
             <TouchableOpacity onPress={() => setShowAddPartner(false)}>
-              <Text className="text-3xl text-muted">×</Text>
+              <Ionicons name="close" size={26} color={colors.muted} />
             </TouchableOpacity>
           </View>
 
@@ -368,7 +377,7 @@ export default function BlockchainScreen() {
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-2xl font-bold text-foreground">Blockchain Carbon Accounting</Text>
             <TouchableOpacity onPress={() => setShowInfo(false)}>
-              <Text className="text-3xl text-muted">×</Text>
+              <Ionicons name="close" size={26} color={colors.muted} />
             </TouchableOpacity>
           </View>
 
@@ -425,15 +434,15 @@ export default function BlockchainScreen() {
         {/* Header */}
         <View className="px-6 pt-6 pb-4">
           <View className="flex-row items-center justify-between mb-2">
-            <Text className="text-3xl font-bold text-foreground">Blockchain</Text>
-            <TouchableOpacity 
+            <ScreenTitle className="text-3xl">Blockchain</ScreenTitle>
+            <TouchableOpacity
               className="active:opacity-70"
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setShowInfo(true);
               }}
             >
-              <Text className="text-2xl">ℹ️</Text>
+              <Ionicons name="information-circle-outline" size={26} color={colors.muted} />
             </TouchableOpacity>
           </View>
           <Text className="text-sm text-muted">
@@ -446,31 +455,12 @@ export default function BlockchainScreen() {
           horizontal
           showsHorizontalScrollIndicator={false}
           className="mb-6"
-          contentContainerStyle={{ paddingHorizontal: 24 }}
+          contentContainerStyle={{ paddingHorizontal: 24, gap: 16 }}
         >
-          <View className="bg-surface rounded-2xl p-4 mr-4" style={{ width: 160 }}>
-            <Text className="text-xs text-muted mb-1">Total Scope 3</Text>
-            <Text className="text-2xl font-bold text-foreground mb-1">{totalScope3}</Text>
-            <Text className="text-xs text-muted">tons CO₂</Text>
-          </View>
-
-          <View className="bg-surface rounded-2xl p-4 mr-4" style={{ width: 160 }}>
-            <Text className="text-xs text-muted mb-1">Verified Txns</Text>
-            <Text className="text-2xl font-bold text-success mb-1">{verifiedCount}</Text>
-            <Text className="text-xs text-success">✓ On blockchain</Text>
-          </View>
-
-          <View className="bg-surface rounded-2xl p-4 mr-4" style={{ width: 160 }}>
-            <Text className="text-xs text-muted mb-1">Supply Chain</Text>
-            <Text className="text-2xl font-bold text-foreground mb-1">{partnerCount}</Text>
-            <Text className="text-xs text-muted">Partners</Text>
-          </View>
-
-          <View className="bg-surface rounded-2xl p-4" style={{ width: 160 }}>
-            <Text className="text-xs text-muted mb-1">Carbon Credits</Text>
-            <Text className="text-2xl font-bold text-primary mb-1">{carbonCredits}</Text>
-            <Text className="text-xs text-muted">tons offset</Text>
-          </View>
+          <MetricCard label="Total Scope 3" value={totalScope3} caption="tons CO₂" width={160} />
+          <MetricCard label="Verified Txns" value={String(verifiedCount)} tone="success" caption="On blockchain" width={160} />
+          <MetricCard label="Supply Chain" value={String(partnerCount)} caption="Partners" width={160} />
+          <MetricCard label="Carbon Credits" value={carbonCredits} tone="primary" caption="tons offset" width={160} />
         </ScrollView>
 
         {/* Transactions List */}
@@ -478,20 +468,21 @@ export default function BlockchainScreen() {
           <View className="flex-row items-center justify-between mb-4">
             <Text className="text-xl font-bold text-foreground">Recent Transactions</Text>
             <TouchableOpacity
-              className="bg-primary px-5 py-3 rounded-full active:opacity-80"
+              className="bg-primary px-5 py-3 rounded-full active:opacity-80 flex-row items-center gap-1"
               onPress={() => {
                 Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light);
                 setShowAddPartner(true);
               }}
             >
-              <Text className="text-background text-base font-semibold">+ Partner</Text>
+              <Ionicons name="add" size={16} color={colors.background} />
+              <Text className="text-background text-base font-semibold">Partner</Text>
             </TouchableOpacity>
           </View>
 
           <View>
             {transactions.length === 0 ? (
               <View className="bg-surface rounded-2xl p-8 items-center">
-                <Text className="text-2xl mb-4">🔗</Text>
+                <Ionicons name="link" size={28} color={colors.muted} style={{ marginBottom: 16 }} />
                 <Text className="text-lg font-semibold text-foreground mb-2">No Transactions Yet</Text>
                 <Text className="text-sm text-muted text-center mb-4">
                   Add your first supply chain partner to start tracking carbon emissions

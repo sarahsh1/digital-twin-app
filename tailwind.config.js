@@ -22,6 +22,12 @@ module.exports = {
   theme: {
     extend: {
       colors: tailwindColors,
+      // Body font (Outfit) and technical/numerical-label font (JetBrains
+      // Mono) per .claude/design.md, loaded in app/_layout.tsx.
+      fontFamily: {
+        sans: ["Outfit_400Regular"],
+        mono: ["JetBrainsMono_400Regular"],
+      },
     },
   },
   plugins: [

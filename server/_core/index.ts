@@ -7,6 +7,9 @@ import { registerOAuthRoutes } from "./oauth";
 import { appRouter } from "../routers";
 import { createContext } from "./context";
 
+const app = express();
+
+
 function isPortAvailable(port: number): Promise<boolean> {
   return new Promise((resolve) => {
     const server = net.createServer();
@@ -27,7 +30,6 @@ async function findAvailablePort(startPort: number = 3000): Promise<number> {
 }
 
 async function startServer() {
-  const app = express();
   const server = createServer(app);
 
   // Enable CORS for all routes - reflect the request origin to support credentials
@@ -81,3 +83,5 @@ async function startServer() {
 }
 
 startServer().catch(console.error);
+
+export default app;

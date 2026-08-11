@@ -1,11 +1,17 @@
 import { ScrollView, Text, View, Image, TouchableOpacity } from "react-native";
 import { router } from "expo-router";
+import { Ionicons } from "@expo/vector-icons";
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
+import { MetricCard } from "@/components/ui/card";
+import { SectionHeader } from "@/components/ui/typography";
+import { useColors } from "@/hooks/use-colors";
 import { Building3DView } from "@/components/Building3DView";
 import { IoTDashboard } from "@/components/IoTDashboard";
 import { analyzeCarbonImpact, type BuildingData, type SimulationScenario } from "@/lib/carbonAnalysis";
 
 export default function SCEBuildingDemoScreen() {
+  const colors = useColors();
   // Supreme Council for Environment Building Data
   const sceBuilding: BuildingData = {
     size: 60000, // sq ft (estimated)
@@ -46,82 +52,85 @@ export default function SCEBuildingDemoScreen() {
 
   const combinedAnalysis = analyzeCarbonImpact(sceBuilding, combinedScenario);
 
-  const MetricCard = ({ label, value, subtitle, color = "text-foreground" }: {
-    label: string;
-    value: string;
-    subtitle?: string;
-    color?: string;
-  }) => (
-    <View className="bg-surface rounded-xl p-4 flex-1">
-      <Text className="text-xs text-muted mb-1">{label}</Text>
-      <Text className={`text-2xl font-bold ${color} mb-1`}>{value}</Text>
-      {subtitle && <Text className="text-xs text-muted">{subtitle}</Text>}
-    </View>
-  );
-
-  const ScenarioCard = ({ title, analysis, icon }: {
+  const ScenarioCard = ({
+    title,
+    analysis,
+    icon,
+  }: {
     title: string;
     analysis: ReturnType<typeof analyzeCarbonImpact>;
-    icon: string;
+    icon: keyof typeof Ionicons.glyphMap;
   }) => (
     <View className="bg-surface rounded-2xl p-5 mb-4">
       <View className="flex-row items-center mb-4">
-        <Text className="text-3xl mr-3">{icon}</Text>
-        <Text className="text-xl font-bold text-foreground flex-1">{title}</Text>
-        <View className={`px-3 py-1 rounded-full ${
-          analysis.confidence.level === "high" ? "bg-success/20" : "bg-warning/20"
-        }`}>
-          <Text className={`text-xs font-medium ${
-            analysis.confidence.level === "high" ? "text-success" : "text-warning"
-          }`}>
-            {analysis.confidence.percentage}% Confidence
-          </Text>
+        <View
+          className="w-11 h-11 rounded-full items-center justify-center mr-3"
+          style={{ backgroundColor: colors.primary + "20" }}
+        >
+          <Ionicons name={icon} size={22} color={colors.primary} />
         </View>
+        <Text className="text-xl font-bold text-foreground flex-1">{title}</Text>
+        <Badge
+          label={`${analysis.confidence.percentage}% Confidence`}
+          tone={analysis.confidence.level === "high" ? "success" : "warning"}
+        />
       </View>
 
       {/* Impact Metrics */}
       <View className="flex-row gap-3 mb-4">
-        <MetricCard
-          label="Carbon Reduction"
-          value={`${analysis.projected.reductionPercentage.toFixed(1)}%`}
-          subtitle={`${(analysis.baseline.annualEmissions - analysis.projected.annualEmissions).toFixed(0)} tons CO₂/year`}
-          color="text-success"
-        />
-        <MetricCard
-          label="Energy Savings"
-          value={`${((analysis.baseline.energyConsumption - analysis.projected.energyConsumption) / 1000).toFixed(0)}k`}
-          subtitle="kWh/year"
-          color="text-primary"
-        />
+        <View className="flex-1">
+          <MetricCard
+            label="Carbon Reduction"
+            value={`${analysis.projected.reductionPercentage.toFixed(1)}%`}
+            caption={`${(analysis.baseline.annualEmissions - analysis.projected.annualEmissions).toFixed(0)} tons CO₂/year`}
+            tone="success"
+          />
+        </View>
+        <View className="flex-1">
+          <MetricCard
+            label="Energy Savings"
+            value={`${((analysis.baseline.energyConsumption - analysis.projected.energyConsumption) / 1000).toFixed(0)}k`}
+            caption="kWh/year"
+            tone="primary"
+          />
+        </View>
       </View>
 
       {/* Financial Metrics */}
       <View className="flex-row gap-3 mb-4">
-        <MetricCard
-          label="Implementation Cost"
-          value={`$${(analysis.financial.implementationCost / 1000).toFixed(0)}k`}
-          subtitle="One-time investment"
-        />
-        <MetricCard
-          label="Annual Savings"
-          value={`$${(analysis.financial.annualSavings / 1000).toFixed(0)}k`}
-          subtitle="Per year"
-          color="text-success"
-        />
+        <View className="flex-1">
+          <MetricCard
+            label="Implementation Cost"
+            value={`$${(analysis.financial.implementationCost / 1000).toFixed(0)}k`}
+            caption="One-time investment"
+          />
+        </View>
+        <View className="flex-1">
+          <MetricCard
+            label="Annual Savings"
+            value={`$${(analysis.financial.annualSavings / 1000).toFixed(0)}k`}
+            caption="Per year"
+            tone="success"
+          />
+        </View>
       </View>
 
       <View className="flex-row gap-3">
-        <MetricCard
-          label="Payback Period"
-          value={`${analysis.financial.paybackPeriod.toFixed(1)} yrs`}
-          subtitle="Break-even point"
-        />
-        <MetricCard
-          label="20-Year ROI"
-          value={`${analysis.financial.roi.toFixed(0)}%`}
-          subtitle={`NPV: $${(analysis.financial.twentyYearNPV / 1000).toFixed(0)}k`}
-          color="text-success"
-        />
+        <View className="flex-1">
+          <MetricCard
+            label="Payback Period"
+            value={`${analysis.financial.paybackPeriod.toFixed(1)} yrs`}
+            caption="Break-even point"
+          />
+        </View>
+        <View className="flex-1">
+          <MetricCard
+            label="20-Year ROI"
+            value={`${analysis.financial.roi.toFixed(0)}%`}
+            caption={`NPV: $${(analysis.financial.twentyYearNPV / 1000).toFixed(0)}k`}
+            tone="success"
+          />
+        </View>
       </View>
     </View>
   );
@@ -132,10 +141,10 @@ export default function SCEBuildingDemoScreen() {
         {/* Header */}
         <View className="px-6 pt-6 pb-4">
           <TouchableOpacity
-            className="flex-row items-center mb-4 active:opacity-70"
+            className="flex-row items-center gap-1 mb-4 active:opacity-70"
             onPress={() => router.back()}
           >
-            <Text className="text-primary text-2xl mr-2">←</Text>
+            <Ionicons name="arrow-back" size={18} color={colors.primary} />
             <Text className="text-primary font-semibold">Back</Text>
           </TouchableOpacity>
           
@@ -174,9 +183,10 @@ export default function SCEBuildingDemoScreen() {
           </View>
         </View>
 
-        {/* 3D Digital Twin */}
+        {/* Building Rendering */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">3D Digital Twin</Text>
+          <SectionHeader className="mb-1">Building Rendering</SectionHeader>
+          <Text className="text-muted text-xs mb-3">Static illustration, not a live 3D model</Text>
           <Building3DView buildingId="sce" showSolarSimulation />
         </View>
 
@@ -185,7 +195,7 @@ export default function SCEBuildingDemoScreen() {
 
         {/* Baseline Emissions */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">Current Carbon Footprint</Text>
+          <SectionHeader className="mb-3">Current Carbon Footprint</SectionHeader>
           <View className="bg-surface rounded-xl p-5">
             <View className="flex-row items-center justify-between mb-4">
               <View>
@@ -195,9 +205,7 @@ export default function SCEBuildingDemoScreen() {
                   <Text className="text-lg text-muted"> tons/year</Text>
                 </Text>
               </View>
-              <View className="bg-error/20 px-4 py-2 rounded-full">
-                <Text className="text-error font-semibold">Baseline</Text>
-              </View>
+              <Badge label="Baseline" tone="error" />
             </View>
             <View className="flex-row gap-3">
               <View className="flex-1">
@@ -218,33 +226,36 @@ export default function SCEBuildingDemoScreen() {
 
         {/* Simulation Scenarios */}
         <View className="px-6 mb-6">
-          <Text className="text-lg font-bold text-foreground mb-3">Sustainability Scenarios</Text>
-          
+          <SectionHeader className="mb-3">Sustainability Scenarios</SectionHeader>
+
           <ScenarioCard
             title="Solar Panel Installation"
             analysis={solarAnalysis}
-            icon="☀️"
+            icon="sunny"
           />
 
           <ScenarioCard
             title="HVAC System Optimization"
             analysis={hvacAnalysis}
-            icon="❄️"
+            icon="snow"
           />
 
           <ScenarioCard
             title="Combined Strategy (Recommended)"
             analysis={combinedAnalysis}
-            icon="🌟"
+            icon="star"
           />
         </View>
 
         {/* AI Recommendations */}
         <View className="px-6">
-          <Text className="text-lg font-bold text-foreground mb-3">AI Recommendations</Text>
-          <View className="bg-secondary/10 border-l-4 border-secondary rounded-lg p-4">
+          <SectionHeader className="mb-3">AI Recommendations</SectionHeader>
+          <View
+            className="border-l-4 border-secondary rounded-lg p-4"
+            style={{ backgroundColor: colors.secondary + "1A" }}
+          >
             <View className="flex-row items-start">
-              <Text className="text-2xl mr-3">🤖</Text>
+              <Ionicons name="bulb" size={22} color={colors.secondary} style={{ marginRight: 12, marginTop: 2 }} />
               <View className="flex-1">
                 <Text className="text-base font-semibold text-foreground mb-2">
                   Optimal Path to Net Zero

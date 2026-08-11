@@ -1,29 +1,27 @@
 import { ScrollView, Text, View, TouchableOpacity, Image } from "react-native";
-import { useState, useEffect, useCallback } from "react";
+import { useState, useCallback } from "react";
 import { Link, router, useFocusEffect } from "expo-router";
 import Animated, { FadeInDown } from "react-native-reanimated";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import * as Haptics from "expo-haptics";
+import { Ionicons } from "@expo/vector-icons";
 
 import { ScreenContainer } from "@/components/screen-container";
+import { Badge } from "@/components/ui/badge";
+import { ScreenTitle } from "@/components/ui/typography";
 import { useColors } from "@/hooks/use-colors";
-import { getAllSimulations, type SimulationResult } from "@/lib/demoSimulations";
+import { loadAllSimulations, type FormattedSimulation } from "@/lib/simulations";
 
-interface Simulation {
-  id: string;
-  buildingName: string;
-  interventionType: string;
-  results: {
-    baseline: { annualEmissions: number };
-    projected: { annualEmissions: number; reductionPercentage: number };
-    financial: { implementationCost: number; annualSavings: number; paybackPeriod: number };
-  };
-  createdAt: string;
-}
+const interventionIcon: Record<string, keyof typeof Ionicons.glyphMap> = {
+  solar: "sunny",
+  hvac: "snow",
+  wind: "cloudy",
+  envelope: "construct",
+  combined: "flash",
+};
 
 export default function SimulationsScreen() {
   const colors = useColors();
-  const [simulations, setSimulations] = useState<Simulation[]>([]);
+  const [simulations, setSimulations] = useState<FormattedSimulation[]>([]);
 
   useFocusEffect(
     useCallback(() => {
@@ -31,83 +29,9 @@ export default function SimulationsScreen() {
     }, [])
   );
 
-  const reloadDemoData = async () => {
-    try {
-      // Clear all data including initialization flags
-      await AsyncStorage.removeItem("simulations");
-      await AsyncStorage.removeItem("buildings");
-      await AsyncStorage.removeItem("demoDataInitialized");
-      await AsyncStorage.removeItem("demoSimsSaved");
-      // Reload page to trigger auto-initialization
-      if (typeof window !== 'undefined') {
-        window.location.reload();
-      } else {
-        await loadSimulations();
-        alert("Demo data reloaded successfully! All simulations now show correct percentages.");
-      }
-    } catch (error) {
-      console.error("Failed to reload demo data", error);
-      alert("Failed to reload data. Please try again.");
-    }
-  };
-
   const loadSimulations = async () => {
-    try {
-      const data = await AsyncStorage.getItem("simulations");
-      let userSimulations: Simulation[] = [];
-      if (data) {
-        userSimulations = JSON.parse(data);
-      }
-      
-      // Load demo simulations
-      const demoSims = getAllSimulations();
-      const formattedDemoSims: Simulation[] = demoSims.map(sim => ({
-        id: sim.id,
-        buildingName: sim.buildingName,
-        interventionType: sim.scenarioType.toLowerCase().includes("solar") ? "solar" : 
-                         sim.scenarioType.toLowerCase().includes("hvac") ? "hvac" :
-                         sim.scenarioType.toLowerCase().includes("wind") ? "wind" : 
-                         sim.scenarioType.toLowerCase().includes("process") ? "hvac" :
-                         sim.scenarioType.toLowerCase().includes("energy") ? "hvac" : "envelope",
-        results: {
-          baseline: { annualEmissions: 1000 },
-          projected: { 
-            annualEmissions: 1000 * (1 - sim.carbonReduction / 100), 
-            reductionPercentage: sim.carbonReduction 
-          },
-          financial: { 
-            implementationCost: sim.costSavings / (sim.roi / 100), 
-            annualSavings: sim.costSavings, 
-            paybackPeriod: sim.paybackPeriod 
-          }
-        },
-        createdAt: sim.date
-      }));
-      
-      // Save demo simulations to AsyncStorage if not already saved
-      const hasDemoSims = await AsyncStorage.getItem("demoSimsSaved");
-      if (!hasDemoSims) {
-        await AsyncStorage.setItem("simulations", JSON.stringify(formattedDemoSims));
-        await AsyncStorage.setItem("demoSimsSaved", "true");
-      }
-      
-      // Combine user and demo simulations
-      const allSims = [...userSimulations, ...formattedDemoSims];
-      setSimulations(allSims.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()));
-    } catch (error) {
-      console.error("Failed to load simulations", error);
-    }
-  };
-
-  const getInterventionIcon = (type: string) => {
-    switch (type) {
-      case "solar": return "☀️";
-      case "hvac": return "❄️";
-      case "wind": return "💨";
-      case "envelope": return "🏗️";
-      case "combined": return "⚡";
-      default: return "🔧";
-    }
+    const all = await loadAllSimulations();
+    setSimulations(all);
   };
 
   return (
@@ -115,12 +39,16 @@ export default function SimulationsScreen() {
       <View className="flex-1">
         {/* Header */}
         <View className="px-4 py-4 border-b" style={{ borderBottomColor: colors.border }}>
-          <Text className="text-foreground text-2xl font-bold">Simulations</Text>
+          <ScreenTitle>Simulations</ScreenTitle>
         </View>
 
         <ScrollView className="flex-1 px-4" showsVerticalScrollIndicator={false}>
           {simulations.length === 0 ? (
-            <Animated.View entering={FadeInDown.duration(400)} className="items-center justify-center py-16">
+            <Animated.View
+              entering={FadeInDown.duration(400)}
+              className="py-16"
+              style={{ alignItems: "center", justifyContent: "center" }}
+            >
               <Image
                 source={require("@/assets/images/simulation-success.png")}
                 style={{ width: 200, height: 200, marginBottom: 16 }}
@@ -131,34 +59,20 @@ export default function SimulationsScreen() {
                 Run your first simulation to analyze carbon reduction opportunities
               </Text>
               <Link href="/simulations/new" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
-                  className="bg-primary rounded-xl px-6 py-3"
+                  className="bg-primary rounded-xl px-6 py-3 flex-row items-center gap-2"
                 >
-                  <Text className="text-white font-semibold">+ New Simulation</Text>
+                  <Ionicons name="add" size={18} color="#fff" />
+                  <Text className="text-white font-semibold">New Simulation</Text>
                 </TouchableOpacity>
               </Link>
             </Animated.View>
           ) : (
             <>
-              {/* Reload Demo Data Button */}
-              <TouchableOpacity 
-                onPress={() => {
-                  Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Medium);
-                  reloadDemoData();
-                }}
-                className="bg-success rounded-2xl p-4 my-4 flex-row items-center justify-between"
-              >
-                <View>
-                  <Text className="text-white text-lg font-bold">Reload Demo Data</Text>
-                  <Text className="text-white/80 text-sm">Fix 0% issue - refresh all simulations</Text>
-                </View>
-                <Text className="text-white text-3xl">🔄</Text>
-              </TouchableOpacity>
-
               {/* New Simulation Button */}
               <Link href="/simulations/new" asChild>
-                <TouchableOpacity 
+                <TouchableOpacity
                   onPress={() => Haptics.impactAsync(Haptics.ImpactFeedbackStyle.Light)}
                   className="bg-primary rounded-2xl p-4 my-4 flex-row items-center justify-between"
                 >
@@ -166,7 +80,7 @@ export default function SimulationsScreen() {
                     <Text className="text-white text-lg font-bold">Run New Simulation</Text>
                     <Text className="text-white/80 text-sm">Analyze carbon reduction scenarios</Text>
                   </View>
-                  <Text className="text-white text-3xl">⚡</Text>
+                  <Ionicons name="flash" size={26} color="#fff" />
                 </TouchableOpacity>
               </Link>
 
@@ -189,16 +103,26 @@ export default function SimulationsScreen() {
                       style={{ borderWidth: 1, borderColor: colors.border }}
                     >
                       <View className="flex-row items-center mb-3">
-                        <Text style={{ fontSize: 32, marginRight: 12 }}>
-                          {getInterventionIcon(sim.interventionType)}
-                        </Text>
+                        <View
+                          className="w-11 h-11 rounded-full items-center justify-center mr-3"
+                          style={{ backgroundColor: colors.primary + "20" }}
+                        >
+                          <Ionicons
+                            name={interventionIcon[sim.interventionType] ?? "settings"}
+                            size={22}
+                            color={colors.primary}
+                          />
+                        </View>
                         <View className="flex-1">
-                          <Text className="text-foreground text-lg font-bold capitalize">
-                            {sim.interventionType.replace("-", " ")} Strategy
-                          </Text>
+                          <View className="flex-row items-center gap-2 mb-1">
+                            <Text className="text-foreground text-lg font-bold capitalize">
+                              {sim.interventionType.replace("-", " ")} Strategy
+                            </Text>
+                            {sim.isDemo && <Badge label="Sample" tone="sample" />}
+                          </View>
                           <Text className="text-muted text-sm">{sim.buildingName}</Text>
                         </View>
-                        <View className="bg-success/20 px-3 py-1 rounded-full">
+                        <View className="px-3 py-1 rounded-full" style={{ backgroundColor: colors.success + "33" }}>
                           <Text className="text-success font-bold text-sm">
                             -{sim.results?.projected?.reductionPercentage?.toFixed(0) || 0}%
                           </Text>
@@ -207,13 +131,17 @@ export default function SimulationsScreen() {
 
                       <View className="flex-row gap-4 mb-3">
                         <View className="flex-1">
-                          <Text className="text-muted text-xs mb-1">CO₂ Reduction</Text>
+                          <Text className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+                            CO2 Reduction
+                          </Text>
                           <Text className="text-foreground font-semibold">
                             {((sim.results?.baseline?.annualEmissions || 0) - (sim.results?.projected?.annualEmissions || 0)).toFixed(0)} tons/yr
                           </Text>
                         </View>
                         <View className="flex-1">
-                          <Text className="text-muted text-xs mb-1">Annual Savings</Text>
+                          <Text className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+                            Annual Savings
+                          </Text>
                           <Text className="text-success font-semibold">
                             ${(sim.results?.financial?.annualSavings || 0).toLocaleString()}
                           </Text>
@@ -222,13 +150,17 @@ export default function SimulationsScreen() {
 
                       <View className="flex-row gap-4">
                         <View className="flex-1">
-                          <Text className="text-muted text-xs mb-1">Investment</Text>
+                          <Text className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+                            Investment
+                          </Text>
                           <Text className="text-foreground font-semibold">
-                            ${((sim.results?.financial?.implementationCost || 0) / 1000).toFixed(0)}K
+                            ${(sim.results?.financial?.implementationCost || 0).toLocaleString()}
                           </Text>
                         </View>
                         <View className="flex-1">
-                          <Text className="text-muted text-xs mb-1">Payback</Text>
+                          <Text className="font-mono text-[10px] uppercase tracking-widest text-muted mb-1">
+                            Payback
+                          </Text>
                           <Text className="text-primary font-semibold">
                             {(sim.results?.financial?.paybackPeriod || 0).toFixed(1)} years
                           </Text>
