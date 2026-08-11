@@ -1,3 +1,27 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* This app has no light theme -- forced dark everywhere, see
+   lib/theme-provider.tsx. color-scheme keeps native browser chrome
+   (scrollbars, autofill, selection) from following OS light mode, and the
+   background/color pair is a fallback for html/body/#root in case the
+   inline shell style in app/+html.tsx doesn't apply (e.g. Fast Refresh). */
+html, body, #root {
+  background-color: #131314;
+  color-scheme: dark;
+}
+body {
+  color: #FFFFFF;
+}
+
+/* Chrome/Safari ignore backgroundColor on autofilled inputs and paint their
+   own light background instead -- this is the only way to override it. */
+input:-webkit-autofill,
+input:-webkit-autofill:hover,
+input:-webkit-autofill:focus {
+  -webkit-text-fill-color: #FFFFFF;
+  -webkit-box-shadow: 0 0 0px 1000px #131314 inset;
+  box-shadow: 0 0 0px 1000px #131314 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
